@@ -1,0 +1,139 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|c:\\users\\aa332\\desktop\\lab\\lab\\viewpatient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|solutionrelative:viewpatient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|c:\\users\\aa332\\desktop\\lab\\lab\\addpatientform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|solutionrelative:addpatientform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|c:\\users\\aa332\\desktop\\lab\\lab\\viewpatient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|solutionrelative:viewpatient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|c:\\users\\aa332\\desktop\\lab\\lab\\addpatientform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|solutionrelative:addpatientform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|c:\\users\\aa332\\desktop\\lab\\lab\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|solutionrelative:form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|c:\\users\\aa332\\desktop\\lab\\lab\\database\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|solutionrelative:database\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|C:\\Users\\aa332\\Desktop\\Lab\\Lab\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4DCF73B0-F5F6-4DDB-AC85-054380D153B6}|Lab.csproj|solutionrelative:form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AddPatientForm.cs",
+              "DocumentMoniker": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\AddPatientForm.cs",
+              "RelativeDocumentMoniker": "AddPatientForm.cs",
+              "ToolTip": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\AddPatientForm.cs",
+              "RelativeToolTip": "AddPatientForm.cs",
+              "ViewState": "AgIAAL8BAAAAAAAAAAAYwMgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-30T22:12:21.079Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ViewPatient.cs",
+              "DocumentMoniker": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\ViewPatient.cs",
+              "RelativeDocumentMoniker": "ViewPatient.cs",
+              "ToolTip": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\ViewPatient.cs",
+              "RelativeToolTip": "ViewPatient.cs",
+              "ViewState": "AgIAAF4CAAAAAAAAAAAAAHICAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-07T22:21:16.639Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ViewPatient.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\ViewPatient.cs",
+              "RelativeDocumentMoniker": "ViewPatient.cs",
+              "ToolTip": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\ViewPatient.cs [Design]",
+              "RelativeToolTip": "ViewPatient.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T23:09:34.1Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AddPatientForm.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\AddPatientForm.cs",
+              "RelativeDocumentMoniker": "AddPatientForm.cs",
+              "ToolTip": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\AddPatientForm.cs [Design]",
+              "RelativeToolTip": "AddPatientForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T23:05:08.451Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Form1.cs",
+              "DocumentMoniker": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\Form1.cs",
+              "RelativeDocumentMoniker": "Form1.cs",
+              "ToolTip": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\Form1.cs",
+              "RelativeToolTip": "Form1.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAwwDAAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-06T18:20:23.584Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Form1.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\Form1.cs",
+              "RelativeDocumentMoniker": "Form1.cs",
+              "ToolTip": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\Form1.cs [Design]",
+              "RelativeToolTip": "Form1.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-07T13:59:12.735Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DatabaseHelper.cs",
+              "DocumentMoniker": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\Database\\DatabaseHelper.cs",
+              "RelativeDocumentMoniker": "Database\\DatabaseHelper.cs",
+              "ToolTip": "C:\\Users\\aa332\\Desktop\\Lab\\Lab\\Database\\DatabaseHelper.cs",
+              "RelativeToolTip": "Database\\DatabaseHelper.cs",
+              "ViewState": "AgIAAIIAAAAAAAAAAADwv2MAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-30T22:16:24.672Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
