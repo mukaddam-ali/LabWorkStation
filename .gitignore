@@ -1,6 +1,6 @@
-*.vscode 
+.vs/ 
+*.vsidx 
 bin/ 
 obj/ 
 *.user 
 *.suo 
-*.vsidx 
