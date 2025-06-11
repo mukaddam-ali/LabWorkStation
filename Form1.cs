@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using DevExpress.XtraEditors;
 
 namespace Lab
 {
@@ -8,6 +9,10 @@ namespace Lab
         public Form1()
         {
             InitializeComponent();
+            btnAddPatient.Click += btnAddPatient_Click;
+            ViewPatient.Click += ViewPatient_Click;
+            AddTest.Click += AddTest_Click;
+            ViewTest.Click += ViewTest_Click;
             //InitializeButtons();
             try
             {
@@ -19,16 +24,6 @@ namespace Lab
             }
         }
 
-        //private void InitializeButtons()
-        //{
-        //    // Update existing Add Patient button
-        //    btnAddPatient.Location = new Point(376, 272);
-        //    btnAddPatient.Size = new Size(125, 38);
-
-        //    // Set form size
-        //    this.ClientSize = new Size(900, 700);
-        //}
-
         private void btnAddPatient_Click(object sender, EventArgs e)
         {
             var addForm = new AddPatientForm();
@@ -38,7 +33,7 @@ namespace Lab
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void ViewPatient_Click(object sender, EventArgs e)
         {
             var addForm = new ViewPatient();
             if (addForm.ShowDialog() == DialogResult.OK)
@@ -66,5 +61,7 @@ namespace Lab
             }
 
         }
+
+
     }
 }

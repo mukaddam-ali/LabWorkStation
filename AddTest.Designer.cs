@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddTest));
             BtnSaveTest = new Button();
             TestUnit = new TextBox();
             TestRef = new TextBox();
@@ -39,9 +40,10 @@
             // 
             // BtnSaveTest
             // 
-            BtnSaveTest.Location = new Point(354, 285);
+            BtnSaveTest.Font = new Font("Tahoma", 11F);
+            BtnSaveTest.Location = new Point(339, 301);
             BtnSaveTest.Name = "BtnSaveTest";
-            BtnSaveTest.Size = new Size(112, 34);
+            BtnSaveTest.Size = new Size(128, 43);
             BtnSaveTest.TabIndex = 0;
             BtnSaveTest.Text = "Save";
             BtnSaveTest.UseVisualStyleBackColor = true;
@@ -49,54 +51,60 @@
             // 
             // TestUnit
             // 
-            TestUnit.Location = new Point(336, 224);
+            TestUnit.Font = new Font("Tahoma", 11F);
+            TestUnit.Location = new Point(400, 220);
             TestUnit.Name = "TestUnit";
-            TestUnit.Size = new Size(150, 31);
+            TestUnit.Size = new Size(214, 34);
             TestUnit.TabIndex = 1;
             TestUnit.TextChanged += TestUnit_TextChanged;
             // 
             // TestRef
             // 
-            TestRef.Location = new Point(336, 163);
+            TestRef.Font = new Font("Tahoma", 11F);
+            TestRef.Location = new Point(400, 159);
             TestRef.Name = "TestRef";
-            TestRef.Size = new Size(150, 31);
+            TestRef.Size = new Size(214, 34);
             TestRef.TabIndex = 2;
             TestRef.TextChanged += TestRef_TextChanged;
             // 
             // TestName
             // 
-            TestName.Location = new Point(336, 98);
+            TestName.Font = new Font("Tahoma", 11F);
+            TestName.Location = new Point(400, 87);
             TestName.Name = "TestName";
-            TestName.Size = new Size(150, 31);
+            TestName.Size = new Size(214, 34);
             TestName.TabIndex = 3;
             TestName.TextChanged += TestName_TextChanged;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(215, 98);
+            label1.Font = new Font("Tahoma", 11F);
+            label1.Location = new Point(226, 94);
             label1.Name = "label1";
-            label1.Size = new Size(94, 25);
+            label1.Size = new Size(140, 27);
             label1.TabIndex = 4;
-            label1.Text = "Test Name";
+            label1.Text = "Test Name : ";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(186, 163);
+            label2.Font = new Font("Tahoma", 11F);
+            label2.Location = new Point(184, 159);
             label2.Name = "label2";
-            label2.Size = new Size(123, 25);
+            label2.Size = new Size(182, 27);
             label2.TabIndex = 5;
-            label2.Text = "Test Reference";
+            label2.Text = "Test Reference : ";
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(230, 227);
+            label3.Font = new Font("Tahoma", 11F);
+            label3.Location = new Point(245, 223);
             label3.Name = "label3";
-            label3.Size = new Size(79, 25);
+            label3.Size = new Size(121, 27);
             label3.TabIndex = 6;
-            label3.Text = "Test Unit";
+            label3.Text = "Test Unit : ";
             // 
             // AddTest
             // 
@@ -110,6 +118,7 @@
             Controls.Add(TestRef);
             Controls.Add(TestUnit);
             Controls.Add(BtnSaveTest);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "AddTest";
             Text = "AddTest";
             ResumeLayout(false);

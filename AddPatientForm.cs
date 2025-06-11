@@ -14,6 +14,7 @@ namespace Lab
     {
         private List<Test> allTests = new List<Test>();
         private List<Test> selectedTests = new List<Test>();
+        private HashSet<string> persistentSelectedTests = new HashSet<string>();
         private Dictionary<int, TextEdit> testInputs = new Dictionary<int, TextEdit>();
         private List<TextEdit> nameFields = new List<TextEdit>();
         private List<TextEdit> valueFields = new List<TextEdit>();
@@ -21,6 +22,7 @@ namespace Lab
         private List<TextEdit> unitFields = new List<TextEdit>();
         private string storedPatientName = "";
         private string storedVisitDate = "";
+        private HashSet<string> selectedTestNames = new HashSet<string>();
 
         public AddPatientForm()
         {
@@ -32,6 +34,7 @@ namespace Lab
             // Configure TestCheckBox
             TestCheckBox.CheckOnClick = true;
             TestCheckBox.MouseClick += TestCheckBox_MouseClick;
+            TestCheckBox.ItemCheck += TestCheckBox_ItemCheck;
             TestCheckBox.ItemHeight = 25; // Increased height for better spacing
             TestCheckBox.Font = new Font(TestCheckBox.Font.FontFamily, 10); // Slightly larger font
         }
@@ -59,10 +62,23 @@ namespace Lab
                 .Where(t => t.Name.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0)
                 .ToList();
 
-            TestCheckBox.Items.Clear();
-            foreach (var test in filtered)
+            TestCheckBox.BeginUpdate();
+            try
             {
-                TestCheckBox.Items.Add(test.Name);
+                TestCheckBox.Items.Clear();
+                foreach (var test in filtered)
+                {
+                    TestCheckBox.Items.Add(test.Name);
+                    // Check the item if it's in our persistent selection
+                    if (persistentSelectedTests.Contains(test.Name))
+                    {
+                        TestCheckBox.SetItemChecked(TestCheckBox.Items.Count - 1, true);
+                    }
+                }
+            }
+            finally
+            {
+                TestCheckBox.EndUpdate();
             }
         }
 
@@ -109,11 +125,10 @@ namespace Lab
             const int DELETE_BUTTON_WIDTH = 80;
             int startX = 10;
 
-            foreach (var checkedItem in TestCheckBox.CheckedItems)
+            // Use persistentSelectedTests to create fields for ALL selected tests
+            foreach (var test in allTests)
             {
-                var testName = checkedItem.ToString();
-                var test = allTests.FirstOrDefault(t => t.Name == testName);
-                if (test != null)
+                if (persistentSelectedTests.Contains(test.Name))
                 {
                     selectedTests.Add(test);
 
@@ -154,17 +169,13 @@ namespace Lab
                     unitValue.KeyDown += (s, e) => HandleEnterKey(s, e, unitFields);
                     unitFields.Add(unitValue);
 
-                    // Add delete button for this test
-                    var deleteButton = new SimpleButton
+                    var deleteButton = new Button
                     {
-                        Text = "Remove",
-                        Location = new Point(startX + (COLUMN_WIDTH + HORIZONTAL_SPACING) * 4 + 50, currentY),
+                        Text = "Delete",
+                        Location = new Point(startX + (COLUMN_WIDTH + HORIZONTAL_SPACING) * 4, currentY),
                         Width = DELETE_BUTTON_WIDTH,
                         Height = TEXTBOX_HEIGHT,
-                        Tag = test,
-                        Appearance = {
-                            BackColor = Color.LightPink
-                        }
+                        Tag = test
                     };
                     deleteButton.Click += DeleteSelectedTest_Click;
 
@@ -186,8 +197,11 @@ namespace Lab
 
         private void DeleteSelectedTest_Click(object sender, EventArgs e)
         {
-            var button = (SimpleButton)sender;
+            var button = (Button)sender;
             var test = (Test)button.Tag;
+
+            // Remove from persistent selection
+            persistentSelectedTests.Remove(test.Name);
 
             // Find the index of the test in our collections
             int index = selectedTests.IndexOf(test);
@@ -217,11 +231,14 @@ namespace Lab
                 testInputs.Remove(test.Id);
                 selectedTests.RemoveAt(index);
 
-                // Uncheck the test in the TestCheckBox
-                int checkBoxIndex = TestCheckBox.Items.IndexOf(test.Name);
-                if (checkBoxIndex >= 0)
+                // Uncheck the test in the TestCheckBox if it's visible
+                for (int i = 0; i < TestCheckBox.Items.Count; i++)
                 {
-                    TestCheckBox.SetItemChecked(checkBoxIndex, false);
+                    if (TestCheckBox.Items[i].ToString() == test.Name)
+                    {
+                        TestCheckBox.SetItemChecked(i, false);
+                        break;
+                    }
                 }
 
                 // Reposition remaining controls
@@ -237,7 +254,7 @@ namespace Lab
                     unitFields[i].Top = currentY;
 
                     // Find and update the delete button position
-                    var deleteBtn = EditPagePatientTests.Controls.OfType<SimpleButton>()
+                    var deleteBtn = EditPagePatientTests.Controls.OfType<Button>()
                         .FirstOrDefault(b => b.Top == nameFields[i].Top);
                     if (deleteBtn != null)
                     {
@@ -455,6 +472,19 @@ namespace Lab
                 // Set the selected index without manually toggling the check state
                 // The CheckOnClick property will handle the toggling automatically
                 TestCheckBox.SelectedIndex = index;
+            }
+        }
+
+        private void TestCheckBox_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            string itemText = TestCheckBox.Items[e.Index].ToString();
+            if (e.NewValue == CheckState.Checked)
+            {
+                persistentSelectedTests.Add(itemText);
+            }
+            else
+            {
+                persistentSelectedTests.Remove(itemText);
             }
         }
 

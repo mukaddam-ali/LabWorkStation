@@ -28,25 +28,27 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewPatient));
             ViewPatientPage = new DevExpress.XtraTab.XtraTabControl();
             SearchPatientPage = new DevExpress.XtraTab.XtraTabPage();
-            DeleteSelectedPatient = new Button();
+            DeleteSelectedPatient = new DevExpress.XtraEditors.SimpleButton();
+            SreachPatientToMenu = new DevExpress.XtraEditors.SimpleButton();
+            label1 = new Label();
             NextToPreview = new Button();
             checkedListBox1 = new CheckedListBox();
             textBox1 = new TextBox();
             EditPatientPage = new DevExpress.XtraTab.XtraTabPage();
+            PrintPdf = new Button();
+            label5 = new Label();
+            label4 = new Label();
+            SearchToModifySelectedTest = new TextBox();
             ModifySelectedTests = new CheckedListBox();
             label3 = new Label();
             label2 = new Label();
-            label1 = new Label();
             SaveEditedPatient = new Button();
             EditPagePatientTests = new DevExpress.XtraEditors.XtraScrollableControl();
-            label7 = new Label();
-            label6 = new Label();
-            label5 = new Label();
             EditPagePatientDate = new TextBox();
             EditPagePatientName = new TextBox();
-            SearchToModifySelectedTest = new TextBox();
             ((System.ComponentModel.ISupportInitialize)ViewPatientPage).BeginInit();
             ViewPatientPage.SuspendLayout();
             SearchPatientPage.SuspendLayout();
@@ -66,6 +68,8 @@
             // SearchPatientPage
             // 
             SearchPatientPage.Controls.Add(DeleteSelectedPatient);
+            SearchPatientPage.Controls.Add(SreachPatientToMenu);
+            SearchPatientPage.Controls.Add(label1);
             SearchPatientPage.Controls.Add(NextToPreview);
             SearchPatientPage.Controls.Add(checkedListBox1);
             SearchPatientPage.Controls.Add(textBox1);
@@ -75,19 +79,42 @@
             // 
             // DeleteSelectedPatient
             // 
-            DeleteSelectedPatient.Location = new Point(400, 461);
+            DeleteSelectedPatient.Appearance.BackColor = Color.FromArgb(255, 192, 192);
+            DeleteSelectedPatient.Appearance.Font = new Font("Tahoma", 11F);
+            DeleteSelectedPatient.Appearance.Options.UseBackColor = true;
+            DeleteSelectedPatient.Appearance.Options.UseFont = true;
+            DeleteSelectedPatient.Location = new Point(430, 436);
             DeleteSelectedPatient.Name = "DeleteSelectedPatient";
-            DeleteSelectedPatient.Size = new Size(202, 34);
+            DeleteSelectedPatient.Size = new Size(117, 43);
             DeleteSelectedPatient.TabIndex = 1;
-            DeleteSelectedPatient.Text = "Delete Selected Patient";
-            DeleteSelectedPatient.UseVisualStyleBackColor = true;
-            DeleteSelectedPatient.Click += DeleteSelectedPatient_Click;
+            DeleteSelectedPatient.Text = "Delete";
+            // 
+            // SreachPatientToMenu
+            // 
+            SreachPatientToMenu.Appearance.Font = new Font("Tahoma", 11F);
+            SreachPatientToMenu.Appearance.Options.UseFont = true;
+            SreachPatientToMenu.Location = new Point(279, 436);
+            SreachPatientToMenu.Name = "SreachPatientToMenu";
+            SreachPatientToMenu.Size = new Size(128, 43);
+            SreachPatientToMenu.TabIndex = 1;
+            SreachPatientToMenu.Text = "Menu";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Tahoma", 11F);
+            label1.Location = new Point(345, 106);
+            label1.Name = "label1";
+            label1.Size = new Size(78, 27);
+            label1.TabIndex = 1;
+            label1.Text = "Search";
             // 
             // NextToPreview
             // 
-            NextToPreview.Location = new Point(445, 421);
+            NextToPreview.Font = new Font("Tahoma", 11F);
+            NextToPreview.Location = new Point(569, 436);
             NextToPreview.Name = "NextToPreview";
-            NextToPreview.Size = new Size(112, 34);
+            NextToPreview.Size = new Size(128, 43);
             NextToPreview.TabIndex = 1;
             NextToPreview.Text = "Preview";
             NextToPreview.UseVisualStyleBackColor = true;
@@ -95,57 +122,100 @@
             // 
             // checkedListBox1
             // 
+            checkedListBox1.Font = new Font("Tahoma", 11F);
             checkedListBox1.FormattingEnabled = true;
             checkedListBox1.Location = new Point(279, 147);
             checkedListBox1.Name = "checkedListBox1";
-            checkedListBox1.Size = new Size(418, 268);
+            checkedListBox1.Size = new Size(418, 252);
             checkedListBox1.TabIndex = 1;
             checkedListBox1.SelectedIndexChanged += checkedListBox1_SelectedIndexChanged;
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(400, 114);
+            textBox1.Font = new Font("Tahoma", 11F);
+            textBox1.Location = new Point(446, 103);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(202, 27);
+            textBox1.Size = new Size(202, 34);
             textBox1.TabIndex = 1;
             textBox1.TextChanged += textBox1_TextChanged;
             // 
             // EditPatientPage
             // 
+            EditPatientPage.Controls.Add(PrintPdf);
+            EditPatientPage.Controls.Add(label5);
+            EditPatientPage.Controls.Add(label4);
             EditPatientPage.Controls.Add(SearchToModifySelectedTest);
             EditPatientPage.Controls.Add(ModifySelectedTests);
             EditPatientPage.Controls.Add(label3);
             EditPatientPage.Controls.Add(label2);
-            EditPatientPage.Controls.Add(label1);
             EditPatientPage.Controls.Add(SaveEditedPatient);
             EditPatientPage.Controls.Add(EditPagePatientTests);
-            EditPatientPage.Controls.Add(label7);
-            EditPatientPage.Controls.Add(label6);
-            EditPatientPage.Controls.Add(label5);
             EditPatientPage.Controls.Add(EditPagePatientDate);
             EditPatientPage.Controls.Add(EditPagePatientName);
             EditPatientPage.Name = "EditPatientPage";
             EditPatientPage.Size = new Size(976, 709);
             EditPatientPage.Text = "Edit Patient";
             // 
+            // PrintPdf
+            // 
+            PrintPdf.Font = new Font("Tahoma", 11F);
+            PrintPdf.Location = new Point(512, 601);
+            PrintPdf.Name = "PrintPdf";
+            PrintPdf.Size = new Size(128, 43);
+            PrintPdf.TabIndex = 1;
+            PrintPdf.Text = "Print ";
+            PrintPdf.UseVisualStyleBackColor = true;
+            PrintPdf.Click += PrintPdf_Click;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Font = new Font("Tahoma", 11F);
+            label5.Location = new Point(214, 163);
+            label5.Name = "label5";
+            label5.Size = new Size(80, 27);
+            label5.TabIndex = 1;
+            label5.Text = "Date : ";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Tahoma", 11F);
+            label4.Location = new Point(203, 84);
+            label4.Name = "label4";
+            label4.Size = new Size(91, 27);
+            label4.TabIndex = 1;
+            label4.Text = "Name : ";
+            // 
+            // SearchToModifySelectedTest
+            // 
+            SearchToModifySelectedTest.Font = new Font("Tahoma", 11F);
+            SearchToModifySelectedTest.Location = new Point(689, 24);
+            SearchToModifySelectedTest.Name = "SearchToModifySelectedTest";
+            SearchToModifySelectedTest.Size = new Size(225, 34);
+            SearchToModifySelectedTest.TabIndex = 1;
+            SearchToModifySelectedTest.TextChanged += SearchToModifySelectedTest_TextChanged;
+            // 
             // ModifySelectedTests
             // 
+            ModifySelectedTests.Font = new Font("Tahoma", 11F);
             ModifySelectedTests.FormattingEnabled = true;
-            ModifySelectedTests.Location = new Point(618, 57);
+            ModifySelectedTests.Location = new Point(605, 68);
             ModifySelectedTests.Name = "ModifySelectedTests";
-            ModifySelectedTests.Size = new Size(225, 148);
+            ModifySelectedTests.Size = new Size(309, 190);
             ModifySelectedTests.TabIndex = 1;
-            ModifySelectedTests.Click += ModifySelectedTests_Click;
             ModifySelectedTests.ItemCheck += ModifySelectedTests_ItemCheck;
+            ModifySelectedTests.Click += ModifySelectedTests_Click;
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(535, 24);
+            label3.Font = new Font("Tahoma", 11F);
+            label3.Location = new Point(605, 28);
             label3.Name = "label3";
-            label3.Size = new Size(51, 19);
+            label3.Size = new Size(78, 27);
             label3.TabIndex = 1;
-            label3.Text = "label3";
+            label3.Text = "Search";
             // 
             // label2
             // 
@@ -154,20 +224,12 @@
             label2.Size = new Size(100, 23);
             label2.TabIndex = 0;
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(11, 320);
-            label1.Name = "label1";
-            label1.Size = new Size(50, 19);
-            label1.TabIndex = 1;
-            label1.Text = "Name";
-            // 
             // SaveEditedPatient
             // 
-            SaveEditedPatient.Location = new Point(423, 601);
+            SaveEditedPatient.Font = new Font("Tahoma", 11F);
+            SaveEditedPatient.Location = new Point(347, 601);
             SaveEditedPatient.Name = "SaveEditedPatient";
-            SaveEditedPatient.Size = new Size(112, 34);
+            SaveEditedPatient.Size = new Size(128, 43);
             SaveEditedPatient.TabIndex = 1;
             SaveEditedPatient.Text = "Save";
             SaveEditedPatient.UseVisualStyleBackColor = true;
@@ -175,59 +237,26 @@
             // 
             // EditPagePatientTests
             // 
-            EditPagePatientTests.Location = new Point(11, 342);
+            EditPagePatientTests.Location = new Point(11, 268);
             EditPagePatientTests.Name = "EditPagePatientTests";
-            EditPagePatientTests.Size = new Size(954, 253);
+            EditPagePatientTests.Size = new Size(954, 327);
             EditPagePatientTests.TabIndex = 1;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(608, 320);
-            label7.Name = "label7";
-            label7.Size = new Size(38, 19);
-            label7.TabIndex = 1;
-            label7.Text = "Unit";
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(423, 320);
-            label6.Name = "label6";
-            label6.Size = new Size(78, 19);
-            label6.TabIndex = 1;
-            label6.Text = "Reference";
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(237, 320);
-            label5.Name = "label5";
-            label5.Size = new Size(48, 19);
-            label5.TabIndex = 1;
-            label5.Text = "Value";
             // 
             // EditPagePatientDate
             // 
-            EditPagePatientDate.Location = new Point(270, 86);
+            EditPagePatientDate.Font = new Font("Tahoma", 11F);
+            EditPagePatientDate.Location = new Point(310, 160);
             EditPagePatientDate.Name = "EditPagePatientDate";
-            EditPagePatientDate.Size = new Size(150, 27);
+            EditPagePatientDate.Size = new Size(150, 34);
             EditPagePatientDate.TabIndex = 1;
             // 
             // EditPagePatientName
             // 
-            EditPagePatientName.Location = new Point(270, 28);
+            EditPagePatientName.Font = new Font("Tahoma", 11F);
+            EditPagePatientName.Location = new Point(310, 81);
             EditPagePatientName.Name = "EditPagePatientName";
-            EditPagePatientName.Size = new Size(150, 27);
+            EditPagePatientName.Size = new Size(150, 34);
             EditPagePatientName.TabIndex = 1;
-            // 
-            // SearchToModifySelectedTest
-            // 
-            SearchToModifySelectedTest.Location = new Point(617, 17);
-            SearchToModifySelectedTest.Name = "SearchToModifySelectedTest";
-            SearchToModifySelectedTest.Size = new Size(225, 27);
-            SearchToModifySelectedTest.TabIndex = 1;
-            SearchToModifySelectedTest.TextChanged += SearchToModifySelectedTest_TextChanged;
             // 
             // ViewPatient
             // 
@@ -235,6 +264,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(978, 744);
             Controls.Add(ViewPatientPage);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ViewPatient";
             Text = "ViewPatient";
             ((System.ComponentModel.ISupportInitialize)ViewPatientPage).EndInit();
@@ -254,18 +284,19 @@
         private TextBox textBox1;
         private CheckedListBox checkedListBox1;
         private Button NextToPreview;
-        private Label label7;
-        private Label label6;
-        private Label label5;
         private TextBox EditPagePatientDate;
         private TextBox EditPagePatientName;
         private Button SaveEditedPatient;
         private DevExpress.XtraEditors.XtraScrollableControl EditPagePatientTests;
-        private Button DeleteSelectedPatient;
-        private Label label1;
         private Label label2;
         private CheckedListBox ModifySelectedTests;
         private Label label3;
         private TextBox SearchToModifySelectedTest;
+        private Label label1;
+        private Label label5;
+        private Label label4;
+        private Button PrintPdf;
+        private DevExpress.XtraEditors.SimpleButton SreachPatientToMenu;
+        private DevExpress.XtraEditors.SimpleButton DeleteSelectedPatient;
     }
 }

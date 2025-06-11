@@ -607,5 +607,64 @@ namespace Lab
                 throw new Exception($"Error refreshing test list: {ex.Message}", ex);
             }
         }
+
+        public static void UpdatePatient(long patientId, string fullName, string visitDate)
+        {
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                using var transaction = conn.BeginTransaction();
+                try
+                {
+                    // Update patient details
+                    var updatePatientCmd = new SQLiteCommand(@"
+                        UPDATE Patients 
+                        SET FullName = @name, VisitDate = @date
+                        WHERE Id = @pid", conn, transaction);
+
+                    updatePatientCmd.Parameters.AddWithValue("@name", fullName);
+                    updatePatientCmd.Parameters.AddWithValue("@date", visitDate);
+                    updatePatientCmd.Parameters.AddWithValue("@pid", patientId);
+                    updatePatientCmd.ExecuteNonQuery();
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception($"Error updating patient data: {ex.Message}", ex);
+                }
+            }
+        }
+
+        public static void UpdatePatientTest(long patientId, int testId, string value, string unit, string referenceRange)
+        {
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                using var transaction = conn.BeginTransaction();
+                try
+                {
+                    var updateTestCmd = new SQLiteCommand(@"
+                        UPDATE PatientTests 
+                        SET Value = @val, Unit = @unit, ReferenceRange = @ref
+                        WHERE PatientId = @pid AND TestId = @tid", conn, transaction);
+
+                    updateTestCmd.Parameters.AddWithValue("@val", value);
+                    updateTestCmd.Parameters.AddWithValue("@unit", unit);
+                    updateTestCmd.Parameters.AddWithValue("@ref", referenceRange);
+                    updateTestCmd.Parameters.AddWithValue("@pid", patientId);
+                    updateTestCmd.Parameters.AddWithValue("@tid", testId);
+                    updateTestCmd.ExecuteNonQuery();
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception($"Error updating patient test data: {ex.Message}", ex);
+                }
+            }
+        }
     }
 }

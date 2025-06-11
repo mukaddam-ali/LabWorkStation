@@ -28,20 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewTest));
             xtraTabControl1 = new DevExpress.XtraTab.XtraTabControl();
             SelectTest = new DevExpress.XtraTab.XtraTabPage();
-            PreviewTest = new DevExpress.XtraTab.XtraTabPage();
-            SearchTest = new TextBox();
-            TestsList = new CheckedListBox();
+            label4 = new Label();
             BtnPreviewTest = new Button();
-            EditTestName = new TextBox();
-            EditTestRef = new TextBox();
-            EditTestUnit = new TextBox();
-            BtnDeleteTest = new Button();
-            BtnSaveTest = new Button();
-            label1 = new Label();
-            label2 = new Label();
+            TestsList = new CheckedListBox();
+            SearchTest = new TextBox();
+            PreviewTest = new DevExpress.XtraTab.XtraTabPage();
             label3 = new Label();
+            label2 = new Label();
+            label1 = new Label();
+            BtnSaveTest = new Button();
+            BtnDeleteTest = new Button();
+            EditTestUnit = new TextBox();
+            EditTestRef = new TextBox();
+            EditTestName = new TextBox();
             ((System.ComponentModel.ISupportInitialize)xtraTabControl1).BeginInit();
             xtraTabControl1.SuspendLayout();
             SelectTest.SuspendLayout();
@@ -60,12 +62,53 @@
             // 
             // SelectTest
             // 
+            SelectTest.Controls.Add(label4);
             SelectTest.Controls.Add(BtnPreviewTest);
             SelectTest.Controls.Add(TestsList);
             SelectTest.Controls.Add(SearchTest);
             SelectTest.Name = "SelectTest";
             SelectTest.Size = new Size(798, 415);
             SelectTest.Text = "Select Test";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Tahoma", 11F);
+            label4.Location = new Point(275, 66);
+            label4.Name = "label4";
+            label4.Size = new Size(78, 27);
+            label4.TabIndex = 4;
+            label4.Text = "Search";
+            // 
+            // BtnPreviewTest
+            // 
+            BtnPreviewTest.Font = new Font("Tahoma", 11F);
+            BtnPreviewTest.Location = new Point(359, 344);
+            BtnPreviewTest.Name = "BtnPreviewTest";
+            BtnPreviewTest.Size = new Size(128, 43);
+            BtnPreviewTest.TabIndex = 4;
+            BtnPreviewTest.Text = "Preview";
+            BtnPreviewTest.UseVisualStyleBackColor = true;
+            BtnPreviewTest.Click += BtnPreviewTest_Click;
+            // 
+            // TestsList
+            // 
+            TestsList.Font = new Font("Tahoma", 11F);
+            TestsList.FormattingEnabled = true;
+            TestsList.Location = new Point(279, 103);
+            TestsList.Name = "TestsList";
+            TestsList.Size = new Size(266, 221);
+            TestsList.TabIndex = 4;
+            TestsList.SelectedIndexChanged += TestsList_SelectedIndexChanged;
+            // 
+            // SearchTest
+            // 
+            SearchTest.Font = new Font("Tahoma", 11F);
+            SearchTest.Location = new Point(359, 63);
+            SearchTest.Name = "SearchTest";
+            SearchTest.Size = new Size(186, 34);
+            SearchTest.TabIndex = 4;
+            SearchTest.TextChanged += SearchTest_TextChanged;
             // 
             // PreviewTest
             // 
@@ -81,103 +124,84 @@
             PreviewTest.Size = new Size(798, 415);
             PreviewTest.Text = "Preview Test";
             // 
-            // SearchTest
+            // label3
             // 
-            SearchTest.Location = new Point(325, 61);
-            SearchTest.Name = "SearchTest";
-            SearchTest.Size = new Size(150, 27);
-            SearchTest.TabIndex = 4;
-            SearchTest.TextChanged += SearchTest_TextChanged;
+            label3.AutoSize = true;
+            label3.Font = new Font("Tahoma", 11F);
+            label3.Location = new Point(246, 211);
+            label3.Name = "label3";
+            label3.Size = new Size(121, 27);
+            label3.TabIndex = 4;
+            label3.Text = "Test Unit : ";
             // 
-            // TestsList
+            // label2
             // 
-            TestsList.FormattingEnabled = true;
-            TestsList.Location = new Point(310, 94);
-            TestsList.Name = "TestsList";
-            TestsList.Size = new Size(180, 124);
-            TestsList.TabIndex = 4;
-            TestsList.SelectedIndexChanged += TestsList_SelectedIndexChanged;
+            label2.AutoSize = true;
+            label2.Font = new Font("Tahoma", 11F);
+            label2.Location = new Point(185, 151);
+            label2.Name = "label2";
+            label2.Size = new Size(182, 27);
+            label2.TabIndex = 4;
+            label2.Text = "Test Reference : ";
             // 
-            // BtnPreviewTest
+            // label1
             // 
-            BtnPreviewTest.Location = new Point(340, 224);
-            BtnPreviewTest.Name = "BtnPreviewTest";
-            BtnPreviewTest.Size = new Size(112, 34);
-            BtnPreviewTest.TabIndex = 4;
-            BtnPreviewTest.Text = "button1";
-            BtnPreviewTest.UseVisualStyleBackColor = true;
-            BtnPreviewTest.Click += BtnPreviewTest_Click;
-            // 
-            // EditTestName
-            // 
-            EditTestName.Location = new Point(325, 82);
-            EditTestName.Name = "EditTestName";
-            EditTestName.Size = new Size(150, 27);
-            EditTestName.TabIndex = 4;
-            EditTestName.TextChanged += EditTestName_TextChanged;
-            // 
-            // EditTestRef
-            // 
-            EditTestRef.Location = new Point(325, 148);
-            EditTestRef.Name = "EditTestRef";
-            EditTestRef.Size = new Size(150, 27);
-            EditTestRef.TabIndex = 4;
-            EditTestRef.TextChanged += EditTestRef_TextChanged;
-            // 
-            // EditTestUnit
-            // 
-            EditTestUnit.Location = new Point(325, 212);
-            EditTestUnit.Name = "EditTestUnit";
-            EditTestUnit.Size = new Size(150, 27);
-            EditTestUnit.TabIndex = 4;
-            EditTestUnit.TextChanged += EditTestUnit_TextChanged;
-            // 
-            // BtnDeleteTest
-            // 
-            BtnDeleteTest.Location = new Point(276, 269);
-            BtnDeleteTest.Name = "BtnDeleteTest";
-            BtnDeleteTest.Size = new Size(112, 34);
-            BtnDeleteTest.TabIndex = 4;
-            BtnDeleteTest.Text = "Delete Test";
-            BtnDeleteTest.UseVisualStyleBackColor = true;
-            BtnDeleteTest.Click += BtnDeleteTest_Click;
+            label1.AutoSize = true;
+            label1.Font = new Font("Tahoma", 11F);
+            label1.Location = new Point(227, 90);
+            label1.Name = "label1";
+            label1.Size = new Size(140, 27);
+            label1.TabIndex = 4;
+            label1.Text = "Test Name : ";
             // 
             // BtnSaveTest
             // 
-            BtnSaveTest.Location = new Point(417, 268);
+            BtnSaveTest.Font = new Font("Tahoma", 11F);
+            BtnSaveTest.Location = new Point(419, 291);
             BtnSaveTest.Name = "BtnSaveTest";
-            BtnSaveTest.Size = new Size(112, 34);
+            BtnSaveTest.Size = new Size(128, 43);
             BtnSaveTest.TabIndex = 4;
             BtnSaveTest.Text = "Save";
             BtnSaveTest.UseVisualStyleBackColor = true;
             BtnSaveTest.Click += BtnSaveTest_Click;
             // 
-            // label1
+            // BtnDeleteTest
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(213, 90);
-            label1.Name = "label1";
-            label1.Size = new Size(85, 19);
-            label1.TabIndex = 4;
-            label1.Text = "Test Name";
+            BtnDeleteTest.Font = new Font("Tahoma", 11F);
+            BtnDeleteTest.Location = new Point(265, 291);
+            BtnDeleteTest.Name = "BtnDeleteTest";
+            BtnDeleteTest.Size = new Size(128, 43);
+            BtnDeleteTest.TabIndex = 4;
+            BtnDeleteTest.Text = "Delete Test";
+            BtnDeleteTest.UseVisualStyleBackColor = true;
+            BtnDeleteTest.Click += BtnDeleteTest_Click;
             // 
-            // label2
+            // EditTestUnit
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(185, 151);
-            label2.Name = "label2";
-            label2.Size = new Size(113, 19);
-            label2.TabIndex = 4;
-            label2.Text = "Test Reference";
+            EditTestUnit.Font = new Font("Tahoma", 11F);
+            EditTestUnit.Location = new Point(395, 204);
+            EditTestUnit.Name = "EditTestUnit";
+            EditTestUnit.Size = new Size(177, 34);
+            EditTestUnit.TabIndex = 4;
+            EditTestUnit.TextChanged += EditTestUnit_TextChanged;
             // 
-            // label3
+            // EditTestRef
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(225, 211);
-            label3.Name = "label3";
-            label3.Size = new Size(73, 19);
-            label3.TabIndex = 4;
-            label3.Text = "Test Unit";
+            EditTestRef.Font = new Font("Tahoma", 11F);
+            EditTestRef.Location = new Point(395, 144);
+            EditTestRef.Name = "EditTestRef";
+            EditTestRef.Size = new Size(177, 34);
+            EditTestRef.TabIndex = 4;
+            EditTestRef.TextChanged += EditTestRef_TextChanged;
+            // 
+            // EditTestName
+            // 
+            EditTestName.Font = new Font("Tahoma", 11F);
+            EditTestName.Location = new Point(395, 87);
+            EditTestName.Name = "EditTestName";
+            EditTestName.Size = new Size(177, 34);
+            EditTestName.TabIndex = 4;
+            EditTestName.TextChanged += EditTestName_TextChanged;
             // 
             // ViewTest
             // 
@@ -185,6 +209,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(xtraTabControl1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ViewTest";
             Text = "ViewTest";
             ((System.ComponentModel.ISupportInitialize)xtraTabControl1).EndInit();
@@ -212,5 +237,6 @@
         private TextBox EditTestUnit;
         private TextBox EditTestRef;
         private TextBox EditTestName;
+        private Label label4;
     }
 }

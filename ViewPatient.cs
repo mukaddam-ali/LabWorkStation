@@ -10,6 +10,11 @@ using System.Windows.Forms;
 using DevExpress.XtraEditors;
 using System.Data.SQLite;
 using DevExpress.XtraTab;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System.IO;
+using Font = System.Drawing.Font;
+using ITextFont = iTextSharp.text.Font;
 
 namespace Lab
 {
@@ -25,12 +30,16 @@ namespace Lab
         private bool isEditingAllowed = false;
         private List<Test> allTests = new List<Test>();
         private bool isProcessingClick = false;
+        private HashSet<string> selectedTestNames = new HashSet<string>();
 
         public ViewPatient()
         {
             InitializeComponent();
             LoadAllPatients();
             LoadAllTests();
+            DeleteSelectedPatient.Click += DeleteSelectedPatient_Click;
+            SreachPatientToMenu.Click += SreachPatientToMenu_Click;
+
             // Disable preview button initially
             NextToPreview.Enabled = false;
             // Enable save button
@@ -38,7 +47,7 @@ namespace Lab
 
             // Add tab change handler
             ViewPatientPage.SelectedPageChanged += ViewPatientPage_SelectedPageChanged;
-            
+
             // Add mouse click handler for the checkedListBox
             checkedListBox1.MouseClick += CheckedListBox1_MouseClick;
             ModifySelectedTests.MouseClick += ModifySelectedTests_MouseClick;
@@ -54,7 +63,7 @@ namespace Lab
 
             // Remove the ItemCheck handler and add Click handler
             checkedListBox1.Click += checkedListBox1_Click;
-            
+
             // Set CheckOnClick to true for better UX
             checkedListBox1.CheckOnClick = true;
         }
@@ -124,6 +133,13 @@ namespace Lab
             currentPatientId = selectedPatient.Id;
             var patientTests = DatabaseHelper.GetPatientTests(selectedPatient.Id);
 
+            // Store all selected test names
+            selectedTestNames.Clear();
+            foreach (var test in patientTests)
+            {
+                selectedTestNames.Add(test.TestName);
+            }
+
             Console.WriteLine($"\n=== Loading tests for patient {selectedPatient.FullName} (ID: {selectedPatient.Id}) ===");
             Console.WriteLine($"Found {patientTests.Count} tests");
 
@@ -152,28 +168,17 @@ namespace Lab
                 ModifySelectedTests.Items.Clear();
                 ModifySelectedTests.ItemCheck -= ModifySelectedTests_ItemCheck; // Remove event handler temporarily
 
-                // Create a HashSet of patient test names for quick lookup
-                var patientTestNames = new HashSet<string>(patientTests.Select(pt => pt.TestName));
-                Console.WriteLine("\nPatient test names: " + string.Join(", ", patientTestNames));
-
-                // Add all available tests first
+                // Add all available tests and set their check states
                 foreach (var test in allTests)
                 {
                     ModifySelectedTests.Items.Add(test.Name);
-                }
-
-                // Now set checkbox states and add test fields
-                for (int i = 0; i < ModifySelectedTests.Items.Count; i++)
-                {
-                    string testName = ModifySelectedTests.Items[i].ToString();
-                    bool isTestSelected = patientTestNames.Contains(testName);
+                    int index = ModifySelectedTests.Items.Count - 1;
                     
-                    if (isTestSelected)
+                    if (selectedTestNames.Contains(test.Name))
                     {
-                        var test = allTests.First(t => t.Name == testName);
-                        var patientTest = patientTests.First(pt => pt.TestName == testName);
+                        ModifySelectedTests.SetItemChecked(index, true);
+                        var patientTest = patientTests.First(pt => pt.TestName == test.Name);
                         AddTestField(test, patientTest.Value);
-                        ModifySelectedTests.SetItemChecked(i, true);
                     }
                 }
 
@@ -263,15 +268,8 @@ namespace Lab
         {
             try
             {
-                // Validate inputs
                 var fullName = EditPagePatientName.Text.Trim();
-                DateTime visitDate;
-
-                if (!DateTime.TryParse(EditPagePatientDate.Text, out visitDate))
-                {
-                    MessageBox.Show("Please enter a valid visit date.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                var visitDate = EditPagePatientDate.Text.Trim();
 
                 if (string.IsNullOrWhiteSpace(fullName))
                 {
@@ -279,64 +277,47 @@ namespace Lab
                     return;
                 }
 
-                // Update patient information in the database
-                using (var conn = new SQLiteConnection(DatabaseHelper.GetConnectionString()))
-                {
-                    conn.Open();
-                    using var transaction = conn.BeginTransaction();
-                    try
-                    {
-                        // Update patient details
-                        var updatePatientCmd = new SQLiteCommand(@"
-                            UPDATE Patients 
-                            SET FullName = @name, VisitDate = @date
-                            WHERE Id = @pid", conn, transaction);
-
-                        updatePatientCmd.Parameters.AddWithValue("@name", fullName);
-                        updatePatientCmd.Parameters.AddWithValue("@date", visitDate.ToString("yyyy-MM-dd"));
-                        updatePatientCmd.Parameters.AddWithValue("@pid", currentPatientId);
-                        updatePatientCmd.ExecuteNonQuery();
+                // Update patient information
+                DatabaseHelper.UpdatePatient(currentPatientId, fullName, visitDate);
 
                         // Update test values
                         for (int i = 0; i < nameFields.Count; i++)
                         {
-                            var testName = nameFields[i].Text.Trim();
+                    var testName = nameFields[i].Text;
                             var value = valueFields[i].Text.Trim();
                             var unit = unitFields[i].Text.Trim();
                             var referenceRange = referenceFields[i].Text.Trim();
 
-                            // Get TestId from the dictionary
-                            var testId = testInputs.FirstOrDefault(x => x.Value == valueFields[i]).Key;
-
-                            var updateTestCmd = new SQLiteCommand(@"
-                                UPDATE PatientTests 
-                                SET Value = @val, Unit = @unit, ReferenceRange = @ref
-                                WHERE PatientId = @pid AND TestId = @tid", conn, transaction);
-
-                            updateTestCmd.Parameters.AddWithValue("@val", value);
-                            updateTestCmd.Parameters.AddWithValue("@unit", unit);
-                            updateTestCmd.Parameters.AddWithValue("@ref", referenceRange);
-                            updateTestCmd.Parameters.AddWithValue("@pid", currentPatientId);
-                            updateTestCmd.Parameters.AddWithValue("@tid", testId);
-                            updateTestCmd.ExecuteNonQuery();
-                        }
-
-                        transaction.Commit();
-                        MessageBox.Show("Patient data updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        // Close the form instead of switching tabs
-                        this.Close();
-                    }
-                    catch (Exception ex)
+                    var test = allTests.FirstOrDefault(t => t.Name == testName);
+                    if (test != null)
                     {
-                        transaction.Rollback();
-                        throw new Exception($"Error updating patient data: {ex.Message}", ex);
+                        DatabaseHelper.UpdatePatientTest(currentPatientId, test.Id, value, unit, referenceRange);
                     }
                 }
+
+                MessageBox.Show("Patient data saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Ask if they want to print
+                var printResult = MessageBox.Show("Would you like to print this patient's report?", 
+                    "Print Report", 
+                    MessageBoxButtons.YesNo, 
+                    MessageBoxIcon.Question);
+
+                if (printResult == DialogResult.Yes)
+                {
+                    PrintPdf_Click(sender, e);
+                }
+
+                // Refresh the patient list
+                LoadAllPatients();
+                
+                // Return to search page
+                ViewPatientPage.SelectedTabPage = SearchPatientPage;
+                isEditingAllowed = false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving changes: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error saving patient data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void DeleteSelectedPatient_Click(object sender, EventArgs e)
@@ -388,42 +369,39 @@ namespace Lab
         }
         private void UpdateTestList(string searchTerm)
         {
-            ModifySelectedTests.SuspendLayout();
-            try
+            // Store currently checked items
+            selectedTestNames.Clear();
+            for (int i = 0; i < ModifySelectedTests.Items.Count; i++)
             {
-                searchTerm = searchTerm.ToLower();
-                
-                // Get current selected tests before clearing
-                var selectedTests = new HashSet<string>();
-                for (int i = 0; i < ModifySelectedTests.Items.Count; i++)
+                if (ModifySelectedTests.GetItemChecked(i))
                 {
-                    if (ModifySelectedTests.GetItemChecked(i))
-                    {
-                        selectedTests.Add(ModifySelectedTests.Items[i].ToString());
-                    }
+                    selectedTestNames.Add(ModifySelectedTests.Items[i].ToString());
                 }
-                
-                // Also add any tests that are in the nameFields (these are definitely selected)
-                selectedTests.UnionWith(nameFields.Select(field => field.Text));
+            }
 
                 ModifySelectedTests.Items.Clear();
-                
-                // Add filtered tests and maintain selection state
-                foreach (var test in allTests.Where(t => t.Name.ToLower().Contains(searchTerm)))
+            ModifySelectedTests.ItemCheck -= ModifySelectedTests_ItemCheck; // Remove event handler temporarily
+
+            // Add filtered tests and restore check states
+            foreach (var test in allTests)
+            {
+                if (test.Name.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     ModifySelectedTests.Items.Add(test.Name);
-                    ModifySelectedTests.SetItemChecked(ModifySelectedTests.Items.Count - 1, 
-                        selectedTests.Contains(test.Name));
+                    int index = ModifySelectedTests.Items.Count - 1;
+                    if (selectedTestNames.Contains(test.Name))
+                    {
+                        ModifySelectedTests.SetItemChecked(index, true);
+                    }
                 }
             }
-            finally
-            {
-                ModifySelectedTests.ResumeLayout(true);
-            }
+
+            // Add the ItemCheck handler back
+            ModifySelectedTests.ItemCheck += ModifySelectedTests_ItemCheck;
         }
         private void SearchToModifySelectedTest_TextChanged(object sender, EventArgs e)
         {
-            string searchTerm = SearchToModifySelectedTest.Text;
+            string searchTerm = SearchToModifySelectedTest.Text.Trim();
             UpdateTestList(searchTerm);
         }
         private void ModifySelectedTests_MouseClick(object sender, MouseEventArgs e)
@@ -460,7 +438,7 @@ namespace Lab
                     // Add the test if it's not a duplicate
                     var test = allTests.First(t => t.Name == selectedTestName);
                     AddTestField(test);
-                    
+
                     // Ensure checkbox state is correct
                     ModifySelectedTests.SetItemChecked(index, true);
                 }
@@ -479,8 +457,8 @@ namespace Lab
                 int startX = 10;
 
                 // Calculate the Y position for the new test field
-                int currentY = nameFields.Count > 0 
-                    ? nameFields.Max(f => f.Location.Y) + VERTICAL_SPACING + TEXTBOX_HEIGHT 
+                int currentY = nameFields.Count > 0
+                    ? nameFields.Max(f => f.Location.Y) + VERTICAL_SPACING + TEXTBOX_HEIGHT
                     : 30;
 
                 // Create all controls first
@@ -612,12 +590,12 @@ namespace Lab
                     }
 
                     // Remove only the controls for this specific test
-                        foreach (var control in controlsToRemove)
-                        {
+                    foreach (var control in controlsToRemove)
+                    {
                         Console.WriteLine($"Removing control: {control.GetType().Name}");
-                            EditPagePatientTests.Controls.Remove(control);
-                            control.Dispose();
-                        }
+                        EditPagePatientTests.Controls.Remove(control);
+                        control.Dispose();
+                    }
 
                     // Remove from testInputs before removing from tracking lists
                     var testIdToRemove = testInputs.FirstOrDefault(x => x.Value == valueField).Key;
@@ -643,17 +621,17 @@ namespace Lab
         }
         private void RepositionRemainingFields(int startIndex)
         {
-                        const int VERTICAL_SPACING = 15;
-                        const int TEXTBOX_HEIGHT = 30;
-            
+            const int VERTICAL_SPACING = 15;
+            const int TEXTBOX_HEIGHT = 30;
+
             // Create a list to store all controls that need updating
             var controlUpdates = new List<(Control Control, Point NewLocation)>();
-            
+
             for (int i = startIndex; i < nameFields.Count; i++)
             {
                 int newY = i == 0 ? 30 : nameFields[i - 1].Location.Y + VERTICAL_SPACING + TEXTBOX_HEIGHT;
                 var newLocation = new Point(nameFields[i].Location.X, newY);
-                
+
                 controlUpdates.Add((nameFields[i], newLocation));
                 controlUpdates.Add((valueFields[i], new Point(valueFields[i].Location.X, newY)));
                 controlUpdates.Add((referenceFields[i], new Point(referenceFields[i].Location.X, newY)));
@@ -713,16 +691,207 @@ namespace Lab
             {
                 // Toggle the clicked item
                 bool newState = !checkedListBox1.GetItemChecked(clickedIndex);
-                
+
                 // First uncheck all items
                 for (int i = 0; i < checkedListBox1.Items.Count; i++)
                 {
                     checkedListBox1.SetItemChecked(i, false);
                 }
-                
+
                 // Then set the clicked item to its new state
                 checkedListBox1.SetItemChecked(clickedIndex, newState);
             }
+        }
+
+        private void PrintPdf_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                long patientId;
+                string patientName;
+                string visitDate;
+                List<PatientTest> patientTests;
+
+                // If we're on the edit page, save changes first
+                if (ViewPatientPage.SelectedTabPage == EditPatientPage)
+                {
+                    // Save changes before printing
+                    patientName = EditPagePatientName.Text.Trim();
+                    visitDate = EditPagePatientDate.Text.Trim();
+
+                    if (string.IsNullOrWhiteSpace(patientName))
+                    {
+                        MessageBox.Show("Please enter full name.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Update patient information
+                    DatabaseHelper.UpdatePatient(currentPatientId, patientName, visitDate);
+
+                    // Update test values
+                    for (int i = 0; i < nameFields.Count; i++)
+                    {
+                        var testName = nameFields[i].Text;
+                        var value = valueFields[i].Text.Trim();
+                        var unit = unitFields[i].Text.Trim();
+                        var referenceRange = referenceFields[i].Text.Trim();
+
+                        var test = allTests.FirstOrDefault(t => t.Name == testName);
+                        if (test != null)
+                        {
+                            DatabaseHelper.UpdatePatientTest(currentPatientId, test.Id, value, unit, referenceRange);
+                        }
+                    }
+
+                    patientId = currentPatientId;
+                    // Get fresh data from database after saving
+                    patientTests = DatabaseHelper.GetPatientTests(patientId);
+
+                    MessageBox.Show("Changes saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else // We're on the search page
+                {
+                    if (checkedListBox1.SelectedIndex == -1)
+                    {
+                        MessageBox.Show("Please select a patient first.", "No Patient Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    var selectedPatient = currentPatients[checkedListBox1.SelectedIndex];
+                    patientId = selectedPatient.Id;
+                    patientName = selectedPatient.FullName;
+                    visitDate = selectedPatient.VisitDate;
+                    patientTests = DatabaseHelper.GetPatientTests(patientId);
+                }
+
+                SaveFileDialog saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "PDF files (*.pdf)|*.pdf",
+                    FilterIndex = 1,
+                    RestoreDirectory = true,
+                    FileName = $"{patientName}_{visitDate.Replace('/', '-')}.pdf"
+                };
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    using (FileStream fs = new FileStream(saveFileDialog.FileName, FileMode.Create))
+                    {
+                        Document document = new Document(PageSize.A4, 50, 50, 50, 50);
+                        PdfWriter writer = PdfWriter.GetInstance(document, fs);
+                        document.Open();
+
+                        // Add title
+                        ITextFont titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18);
+                        ITextFont headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12);
+                        ITextFont normalFont = FontFactory.GetFont(FontFactory.HELVETICA, 12);
+
+                        // Add laboratory name at the top
+                        Paragraph labName = new Paragraph("Laboratory Report", titleFont);
+                        labName.Alignment = Element.ALIGN_CENTER;
+                        labName.SpacingAfter = 20f;
+                        document.Add(labName);
+
+                        // Add patient information
+                        Paragraph patientInfo = new Paragraph();
+                        patientInfo.Add(new Chunk("Patient Name: ", headerFont));
+                        patientInfo.Add(new Chunk(patientName + "\n", normalFont));
+                        patientInfo.Add(new Chunk("Visit Date: ", headerFont));
+                        patientInfo.Add(new Chunk(visitDate + "\n\n", normalFont));
+                        document.Add(patientInfo);
+
+                        // Create table for test results
+                        PdfPTable table = new PdfPTable(4);
+                        table.WidthPercentage = 100;
+                        table.SetWidths(new[] { 3f, 2f, 2f, 2f });
+
+                        // Add table headers
+                        string[] headers = { "Test Name", "Value", "Reference Range", "Unit" };
+                        foreach (string header in headers)
+                        {
+                            PdfPCell cell = new PdfPCell(new Phrase(header, headerFont));
+                            cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                            cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            cell.Padding = 5;
+                            table.AddCell(cell);
+                        }
+
+                        // Add test results
+                        foreach (var test in patientTests)
+                        {
+                            // Test name
+                            PdfPCell nameCell = new PdfPCell(new Phrase(test.TestName, normalFont));
+                            nameCell.HorizontalAlignment = Element.ALIGN_LEFT;
+                            nameCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            nameCell.Padding = 5;
+                            table.AddCell(nameCell);
+
+                            // Value
+                            PdfPCell valueCell = new PdfPCell(new Phrase(test.Value, normalFont));
+                            valueCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            valueCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            valueCell.Padding = 5;
+                            table.AddCell(valueCell);
+
+                            // Reference Range
+                            PdfPCell refCell = new PdfPCell(new Phrase(test.ReferenceRange, normalFont));
+                            refCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            refCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            refCell.Padding = 5;
+                            table.AddCell(refCell);
+
+                            // Unit
+                            PdfPCell unitCell = new PdfPCell(new Phrase(test.Unit, normalFont));
+                            unitCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                            unitCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                            unitCell.Padding = 5;
+                            table.AddCell(unitCell);
+                        }
+
+                        document.Add(table);
+                        document.Close();
+                        MessageBox.Show("PDF file has been created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // After successful printing, refresh the patient list and return to search page if we were in edit mode
+                        if (ViewPatientPage.SelectedTabPage == EditPatientPage)
+                        {
+                            LoadAllPatients();
+                            ViewPatientPage.SelectedTabPage = SearchPatientPage;
+                            isEditingAllowed = false;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while creating the PDF: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void SreachPatientToMenu_Click(object sender, EventArgs e)
+        {
+            // Clear all fields and selections
+            textBox1.Text = "";
+            checkedListBox1.Items.Clear();
+            EditPagePatientName.Text = "";
+            EditPagePatientDate.Text = "";
+            EditPagePatientTests.Controls.Clear();
+            ModifySelectedTests.Items.Clear();
+
+            // Clear all collections
+            currentPatients.Clear();
+            testInputs.Clear();
+            nameFields.Clear();
+            valueFields.Clear();
+            referenceFields.Clear();
+            unitFields.Clear();
+
+            // Reset tab to search page
+            ViewPatientPage.SelectedTabPage = SearchPatientPage;
+            isEditingAllowed = false;
+
+            // Close the form
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
         }
     }
 }

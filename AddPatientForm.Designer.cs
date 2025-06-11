@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddPatientForm));
             xtraTabControl = new DevExpress.XtraTab.XtraTabControl();
             tabPatientInfo = new DevExpress.XtraTab.XtraTabPage();
             FromAddPatientToMenu = new Button();
@@ -67,16 +68,20 @@
             // 
             // xtraTabControl
             // 
+            xtraTabControl.Appearance.BackColor = Color.White;
+            xtraTabControl.Appearance.Options.UseBackColor = true;
             xtraTabControl.Dock = DockStyle.Fill;
             xtraTabControl.Location = new Point(0, 0);
             xtraTabControl.Name = "xtraTabControl";
             xtraTabControl.SelectedTabPage = tabPatientInfo;
-            xtraTabControl.Size = new Size(978, 744);
+            xtraTabControl.Size = new Size(1077, 711);
             xtraTabControl.TabIndex = 0;
             xtraTabControl.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] { tabPatientInfo, tabSelectTests, tabEnterValues });
             // 
             // tabPatientInfo
             // 
+            tabPatientInfo.Appearance.PageClient.BackColor = Color.White;
+            tabPatientInfo.Appearance.PageClient.Options.UseBackColor = true;
             tabPatientInfo.Controls.Add(FromAddPatientToMenu);
             tabPatientInfo.Controls.Add(BtnNextToTests);
             tabPatientInfo.Controls.Add(dateEditVisitDate);
@@ -84,14 +89,15 @@
             tabPatientInfo.Controls.Add(labelControl2);
             tabPatientInfo.Controls.Add(labelControl1);
             tabPatientInfo.Name = "tabPatientInfo";
-            tabPatientInfo.Size = new Size(976, 709);
+            tabPatientInfo.Size = new Size(1075, 676);
             tabPatientInfo.Text = "Patient Info";
             // 
             // FromAddPatientToMenu
             // 
-            FromAddPatientToMenu.Location = new Point(224, 331);
+            FromAddPatientToMenu.Font = new Font("Tahoma", 11F);
+            FromAddPatientToMenu.Location = new Point(344, 417);
             FromAddPatientToMenu.Name = "FromAddPatientToMenu";
-            FromAddPatientToMenu.Size = new Size(112, 34);
+            FromAddPatientToMenu.Size = new Size(128, 43);
             FromAddPatientToMenu.TabIndex = 1;
             FromAddPatientToMenu.Text = "Menu";
             FromAddPatientToMenu.UseVisualStyleBackColor = true;
@@ -99,63 +105,75 @@
             // 
             // BtnNextToTests
             // 
-            BtnNextToTests.Location = new Point(603, 331);
+            BtnNextToTests.Font = new Font("Tahoma", 11F);
+            BtnNextToTests.Location = new Point(610, 417);
             BtnNextToTests.Name = "BtnNextToTests";
-            BtnNextToTests.Size = new Size(112, 34);
+            BtnNextToTests.Size = new Size(128, 43);
             BtnNextToTests.TabIndex = 1;
-            BtnNextToTests.Text = "Select Tests";
+            BtnNextToTests.Text = "Next";
             BtnNextToTests.UseVisualStyleBackColor = true;
             BtnNextToTests.Click += BtnNextToTests_Click;
             // 
             // dateEditVisitDate
             // 
             dateEditVisitDate.EditValue = null;
-            dateEditVisitDate.Location = new Point(380, 128);
+            dateEditVisitDate.Location = new Point(513, 238);
             dateEditVisitDate.Name = "dateEditVisitDate";
+            dateEditVisitDate.Properties.Appearance.Font = new Font("Tahoma", 11F);
+            dateEditVisitDate.Properties.Appearance.Options.UseFont = true;
             dateEditVisitDate.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             dateEditVisitDate.Properties.CalendarTimeProperties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            dateEditVisitDate.Size = new Size(225, 26);
+            dateEditVisitDate.Size = new Size(225, 34);
             dateEditVisitDate.TabIndex = 3;
             // 
             // textEditFullName
             // 
-            textEditFullName.Location = new Point(380, 67);
+            textEditFullName.Location = new Point(513, 140);
             textEditFullName.Name = "textEditFullName";
-            textEditFullName.Size = new Size(225, 26);
+            textEditFullName.Properties.Appearance.Font = new Font("Tahoma", 11F);
+            textEditFullName.Properties.Appearance.Options.UseFont = true;
+            textEditFullName.Size = new Size(225, 34);
             textEditFullName.TabIndex = 2;
             // 
             // labelControl2
             // 
-            labelControl2.Location = new Point(246, 131);
+            labelControl2.Appearance.Font = new Font("Tahoma", 11F);
+            labelControl2.Appearance.Options.UseFont = true;
+            labelControl2.Location = new Point(344, 241);
             labelControl2.Name = "labelControl2";
-            labelControl2.Size = new Size(67, 19);
+            labelControl2.Size = new Size(108, 27);
             labelControl2.TabIndex = 1;
-            labelControl2.Text = "Visit Date";
+            labelControl2.Text = "Visit Date :";
             // 
             // labelControl1
             // 
-            labelControl1.Location = new Point(246, 70);
+            labelControl1.Appearance.Font = new Font("Tahoma", 11F);
+            labelControl1.Appearance.Options.UseFont = true;
+            labelControl1.Location = new Point(344, 143);
             labelControl1.Name = "labelControl1";
-            labelControl1.Size = new Size(71, 19);
+            labelControl1.Size = new Size(119, 27);
             labelControl1.TabIndex = 0;
-            labelControl1.Text = "Full Name";
+            labelControl1.Text = "Full Name : ";
             // 
             // tabSelectTests
             // 
+            tabSelectTests.Appearance.PageClient.BackColor = Color.White;
+            tabSelectTests.Appearance.PageClient.Options.UseBackColor = true;
             tabSelectTests.Controls.Add(BtnBackToPatientInfo);
             tabSelectTests.Controls.Add(SearchLabel);
             tabSelectTests.Controls.Add(txtSearch);
             tabSelectTests.Controls.Add(TestCheckBox);
             tabSelectTests.Controls.Add(btnNextToValues);
             tabSelectTests.Name = "tabSelectTests";
-            tabSelectTests.Size = new Size(976, 709);
+            tabSelectTests.Size = new Size(1075, 676);
             tabSelectTests.Text = "Select Tests";
             // 
             // BtnBackToPatientInfo
             // 
-            BtnBackToPatientInfo.Location = new Point(170, 354);
+            BtnBackToPatientInfo.Font = new Font("Tahoma", 11F);
+            BtnBackToPatientInfo.Location = new Point(392, 471);
             BtnBackToPatientInfo.Name = "BtnBackToPatientInfo";
-            BtnBackToPatientInfo.Size = new Size(120, 30);
+            BtnBackToPatientInfo.Size = new Size(128, 43);
             BtnBackToPatientInfo.TabIndex = 1;
             BtnBackToPatientInfo.Text = "Back";
             BtnBackToPatientInfo.UseVisualStyleBackColor = true;
@@ -164,17 +182,19 @@
             // SearchLabel
             // 
             SearchLabel.AutoSize = true;
-            SearchLabel.Location = new Point(273, 6);
+            SearchLabel.Font = new Font("Tahoma", 11F);
+            SearchLabel.Location = new Point(392, 73);
             SearchLabel.Name = "SearchLabel";
-            SearchLabel.Size = new Size(56, 19);
+            SearchLabel.Size = new Size(78, 27);
             SearchLabel.TabIndex = 1;
             SearchLabel.Text = "Search";
             // 
             // txtSearch
             // 
-            txtSearch.Location = new Point(335, 3);
+            txtSearch.Font = new Font("Tahoma", 11F);
+            txtSearch.Location = new Point(478, 73);
             txtSearch.Name = "txtSearch";
-            txtSearch.Size = new Size(233, 27);
+            txtSearch.Size = new Size(233, 34);
             txtSearch.TabIndex = 2;
             txtSearch.Click += txtSearch_Click;
             txtSearch.TextChanged += txtSearch_TextChanged;
@@ -182,18 +202,21 @@
             // 
             // TestCheckBox
             // 
+            TestCheckBox.Font = new Font("Tahoma", 11F);
             TestCheckBox.FormattingEnabled = true;
-            TestCheckBox.Location = new Point(335, 39);
+            TestCheckBox.Location = new Point(394, 129);
             TestCheckBox.Name = "TestCheckBox";
-            TestCheckBox.Size = new Size(233, 340);
+            TestCheckBox.Size = new Size(317, 314);
             TestCheckBox.TabIndex = 1;
             TestCheckBox.SelectedIndexChanged += TestCheckBox_SelectedIndexChanged;
             // 
             // btnNextToValues
             // 
-            btnNextToValues.Location = new Point(617, 354);
+            btnNextToValues.Appearance.Font = new Font("Tahoma", 11F);
+            btnNextToValues.Appearance.Options.UseFont = true;
+            btnNextToValues.Location = new Point(583, 470);
             btnNextToValues.Name = "btnNextToValues";
-            btnNextToValues.Size = new Size(120, 28);
+            btnNextToValues.Size = new Size(128, 43);
             btnNextToValues.TabIndex = 1;
             btnNextToValues.Text = "Next";
             btnNextToValues.Click += btnNextToValues_Click;
@@ -211,14 +234,15 @@
             tabEnterValues.Controls.Add(label2);
             tabEnterValues.Controls.Add(btnSavePatient);
             tabEnterValues.Name = "tabEnterValues";
-            tabEnterValues.Size = new Size(976, 709);
+            tabEnterValues.Size = new Size(1075, 676);
             tabEnterValues.Text = "Enter Test Values";
             // 
             // BtnBackToSelectTest
             // 
-            BtnBackToSelectTest.Location = new Point(314, 630);
+            BtnBackToSelectTest.Font = new Font("Tahoma", 11F);
+            BtnBackToSelectTest.Location = new Point(282, 590);
             BtnBackToSelectTest.Name = "BtnBackToSelectTest";
-            BtnBackToSelectTest.Size = new Size(120, 54);
+            BtnBackToSelectTest.Size = new Size(128, 43);
             BtnBackToSelectTest.TabIndex = 1;
             BtnBackToSelectTest.Text = "Back";
             BtnBackToSelectTest.UseVisualStyleBackColor = true;
@@ -226,43 +250,50 @@
             // 
             // PatientName3
             // 
-            PatientName3.Location = new Point(380, 26);
+            PatientName3.Location = new Point(494, 25);
             PatientName3.Name = "PatientName3";
+            PatientName3.Properties.Appearance.Font = new Font("Tahoma", 11F);
+            PatientName3.Properties.Appearance.Options.UseFont = true;
             PatientName3.Properties.ReadOnly = true;
-            PatientName3.Size = new Size(225, 26);
+            PatientName3.Size = new Size(225, 34);
             PatientName3.TabIndex = 1;
             // 
             // Date3
             // 
-            Date3.Location = new Point(380, 57);
+            Date3.Location = new Point(494, 65);
             Date3.Name = "Date3";
+            Date3.Properties.Appearance.Font = new Font("Tahoma", 11F);
+            Date3.Properties.Appearance.Options.UseFont = true;
             Date3.Properties.ReadOnly = true;
-            Date3.Size = new Size(225, 26);
+            Date3.Size = new Size(225, 34);
             Date3.TabIndex = 2;
             // 
             // EditPagePatientTests
             // 
-            EditPagePatientTests.Location = new Point(37, 182);
+            EditPagePatientTests.Font = new Font("Tahoma", 11F);
+            EditPagePatientTests.Location = new Point(20, 105);
             EditPagePatientTests.Name = "EditPagePatientTests";
-            EditPagePatientTests.Size = new Size(928, 442);
+            EditPagePatientTests.Size = new Size(1035, 457);
             EditPagePatientTests.TabIndex = 0;
             EditPagePatientTests.Click += TestGridView_Click;
             // 
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(317, 60);
+            label6.Font = new Font("Tahoma", 11F);
+            label6.Location = new Point(367, 68);
             label6.Name = "label6";
-            label6.Size = new Size(57, 19);
+            label6.Size = new Size(80, 27);
             label6.TabIndex = 1;
             label6.Text = "Date : ";
             // 
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(255, 29);
+            label5.Font = new Font("Tahoma", 11F);
+            label5.Location = new Point(282, 28);
             label5.Name = "label5";
-            label5.Size = new Size(119, 19);
+            label5.Size = new Size(165, 27);
             label5.TabIndex = 1;
             label5.Text = "Patient Name : ";
             // 
@@ -289,9 +320,11 @@
             // 
             // btnSavePatient
             // 
-            btnSavePatient.Location = new Point(440, 630);
+            btnSavePatient.Appearance.Font = new Font("Tahoma", 11F);
+            btnSavePatient.Appearance.Options.UseFont = true;
+            btnSavePatient.Location = new Point(591, 589);
             btnSavePatient.Name = "btnSavePatient";
-            btnSavePatient.Size = new Size(120, 54);
+            btnSavePatient.Size = new Size(128, 43);
             btnSavePatient.TabIndex = 1;
             btnSavePatient.Text = "Save Patient";
             btnSavePatient.Click += btnSavePatient_Click;
@@ -300,8 +333,9 @@
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(978, 744);
+            ClientSize = new Size(1077, 711);
             Controls.Add(xtraTabControl);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "AddPatientForm";
             ((System.ComponentModel.ISupportInitialize)xtraTabControl).EndInit();
             xtraTabControl.ResumeLayout(false);
