@@ -29,9 +29,9 @@ namespace Lab
             xtraTabControl.SelectedPageChanging += XtraTabControl_SelectedPageChanging;
             xtraTabControl.SelectedPageChanged += XtraTabControl_SelectedPageChanged;
 
-            // Add mouse click handler for the TestCheckBox
+            // Configure TestCheckBox
+            TestCheckBox.CheckOnClick = true;
             TestCheckBox.MouseClick += TestCheckBox_MouseClick;
-            // Set the item height to add spacing between items
             TestCheckBox.ItemHeight = 25; // Increased height for better spacing
             TestCheckBox.Font = new Font(TestCheckBox.Font.FontFamily, 10); // Slightly larger font
         }
@@ -452,9 +452,8 @@ namespace Lab
             int index = TestCheckBox.IndexFromPoint(e.Location);
             if (index != ListBox.NoMatches)
             {
-                // Toggle the checked state
-                TestCheckBox.SetItemChecked(index, !TestCheckBox.GetItemChecked(index));
-                // Set the selected index
+                // Set the selected index without manually toggling the check state
+                // The CheckOnClick property will handle the toggling automatically
                 TestCheckBox.SelectedIndex = index;
             }
         }

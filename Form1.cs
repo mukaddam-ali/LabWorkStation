@@ -46,5 +46,25 @@ namespace Lab
                 // No need to refresh list since it's moved to ViewPatientsForm
             }
         }
+
+        private void AddTest_Click(object sender, EventArgs e)
+        {
+            var addForm = new AddTest();
+            if (addForm.ShowDialog() == DialogResult.OK)
+            {
+                // No need to refresh list since it's moved to ViewPatientsForm
+            }
+
+        }
+
+        private void ViewTest_Click(object sender, EventArgs e)
+        {
+            var addForm = new ViewTest();
+            if (addForm.ShowDialog() == DialogResult.OK)
+            {
+                // No need to refresh list since it's moved to ViewPatientsForm
+            }
+
+        }
     }
 }

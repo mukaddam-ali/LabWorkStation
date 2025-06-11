@@ -398,62 +398,45 @@ namespace Lab
             {
                 using var conn = new SQLiteConnection(connectionString);
                 conn.Open();
+                using var testListConn = new SQLiteConnection(testListDbConnStr);
+                testListConn.Open();
 
-                // Debug: Print all tables content
-                Console.WriteLine("\nDebugging all tables content:");
-                
-                // Debug: Print Tests table content
-                using (var cmd = new SQLiteCommand("SELECT * FROM Tests", conn))
-                {
-                    using var reader = cmd.ExecuteReader();
-                    Console.WriteLine("\nTests table content:");
-                    while (reader.Read())
-                    {
-                        Console.WriteLine($"Test ID: {reader["Id"]}, Name: {reader["Name"]}, Unit: {reader["Unit"]}, Range: {reader["ReferenceRange"]}");
-                    }
-                }
-
-                // Debug: Print PatientTests table content for this patient
-                using (var cmd = new SQLiteCommand("SELECT * FROM PatientTests WHERE PatientId = @pid", conn))
+                // Get all patient tests first
+                var patientTests = new Dictionary<int, PatientTest>();
+                using (var cmd = new SQLiteCommand(@"
+                    SELECT TestId, Value, Unit, ReferenceRange 
+                    FROM PatientTests 
+                    WHERE PatientId = @pid", conn))
                 {
                     cmd.Parameters.AddWithValue("@pid", patientId);
                     using var reader = cmd.ExecuteReader();
-                    Console.WriteLine($"\nPatientTests table content for patient {patientId}:");
                     while (reader.Read())
                     {
-                        Console.WriteLine($"Test ID: {reader["TestId"]}, Value: {reader["Value"]}, Unit: {reader["Unit"]}, Range: {reader["ReferenceRange"]}");
+                        var test = new PatientTest
+                        {
+                            TestId = Convert.ToInt32(reader["TestId"]),
+                            Value = reader["Value"]?.ToString() ?? string.Empty,
+                            Unit = reader["Unit"]?.ToString() ?? string.Empty,
+                            ReferenceRange = reader["ReferenceRange"]?.ToString() ?? string.Empty
+                        };
+                        patientTests[test.TestId] = test;
                     }
                 }
 
-                // Get test details with explicit columns and joins
-                string sql = @"
-                    SELECT 
-                        pt.TestId,
-                        t.Name as TestName,
-                        pt.Value, 
-                        pt.Unit, 
-                        pt.ReferenceRange
-                    FROM PatientTests pt
-                    INNER JOIN Tests t ON t.Id = pt.TestId
-                    WHERE pt.PatientId = @pid
-                    ORDER BY t.Name";
-                
-                using var cmdTests = new SQLiteCommand(sql, conn);
-                cmdTests.Parameters.AddWithValue("@pid", patientId);
-                
-                using var testReader = cmdTests.ExecuteReader();
-                while (testReader.Read())
+                // Now get test names from TestList database
+                foreach (var patientTest in patientTests.Values)
                 {
-                    var test = new PatientTest
+                    using (var cmd = new SQLiteCommand("SELECT Name FROM TestList WHERE Id = @tid", testListConn))
                     {
-                        TestId = Convert.ToInt32(testReader["TestId"]),
-                        TestName = testReader["TestName"]?.ToString() ?? string.Empty,
-                        Value = testReader["Value"]?.ToString() ?? string.Empty,
-                        Unit = testReader["Unit"]?.ToString() ?? string.Empty,
-                        ReferenceRange = testReader["ReferenceRange"]?.ToString() ?? string.Empty
-                    };
-                    tests.Add(test);
-                    Console.WriteLine($"Retrieved test: ID={test.TestId}, Name={test.TestName}, Value={test.Value}");
+                        cmd.Parameters.AddWithValue("@tid", patientTest.TestId);
+                        var testName = cmd.ExecuteScalar()?.ToString();
+                        if (!string.IsNullOrEmpty(testName))
+                        {
+                            patientTest.TestName = testName;
+                            tests.Add(patientTest);
+                            Console.WriteLine($"Retrieved test: ID={patientTest.TestId}, Name={patientTest.TestName}, Value={patientTest.Value}");
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -564,6 +547,64 @@ namespace Lab
                     MessageBoxIcon.Error
                 );
                 return false;
+            }
+        }
+
+        public static void RefreshTestList()
+        {
+            try
+            {
+                // Copy tests from TestList database to Tests table
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    using (var transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // Clear existing tests
+                            using (var cmdClear = new SQLiteCommand("DELETE FROM Tests", conn))
+                            {
+                                cmdClear.ExecuteNonQuery();
+                            }
+
+                            // Copy tests from TestList
+                            using (var testListConn = new SQLiteConnection(testListDbConnStr))
+                            {
+                                testListConn.Open();
+                                using (var cmdGet = new SQLiteCommand("SELECT * FROM TestList", testListConn))
+                                using (var reader = cmdGet.ExecuteReader())
+                                {
+                                    using (var cmdInsert = new SQLiteCommand(@"
+                                        INSERT INTO Tests (Id, Name, Unit, ReferenceRange)
+                                        VALUES (@id, @name, @unit, @ref)", conn))
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            cmdInsert.Parameters.Clear();
+                                            cmdInsert.Parameters.AddWithValue("@id", reader["Id"]);
+                                            cmdInsert.Parameters.AddWithValue("@name", reader["Name"]);
+                                            cmdInsert.Parameters.AddWithValue("@unit", reader["Unit"]);
+                                            cmdInsert.Parameters.AddWithValue("@ref", reader["Ref"]);
+                                            cmdInsert.ExecuteNonQuery();
+                                        }
+                                    }
+                                }
+                            }
+
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            throw new Exception($"Failed to refresh test list: {ex.Message}", ex);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error refreshing test list: {ex.Message}", ex);
             }
         }
     }

@@ -30,6 +30,8 @@
         {
             btnAddPatient = new Button();
             button1 = new Button();
+            AddTest = new Button();
+            ViewTest = new Button();
             SuspendLayout();
             // 
             // btnAddPatient
@@ -53,11 +55,33 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
+            // AddTest
+            // 
+            AddTest.Location = new Point(376, 361);
+            AddTest.Name = "AddTest";
+            AddTest.Size = new Size(125, 34);
+            AddTest.TabIndex = 2;
+            AddTest.Text = "Add Test";
+            AddTest.UseVisualStyleBackColor = true;
+            AddTest.Click += AddTest_Click;
+            // 
+            // ViewTest
+            // 
+            ViewTest.Location = new Point(376, 401);
+            ViewTest.Name = "ViewTest";
+            ViewTest.Size = new Size(125, 34);
+            ViewTest.TabIndex = 3;
+            ViewTest.Text = "View Test";
+            ViewTest.UseVisualStyleBackColor = true;
+            ViewTest.Click += ViewTest_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(900, 700);
+            Controls.Add(ViewTest);
+            Controls.Add(AddTest);
             Controls.Add(button1);
             Controls.Add(btnAddPatient);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -73,5 +97,7 @@
 
         private Button btnAddPatient;
         private Button button1;
+        private Button AddTest;
+        private Button ViewTest;
     }
 }
