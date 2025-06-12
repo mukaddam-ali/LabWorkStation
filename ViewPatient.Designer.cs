@@ -38,6 +38,8 @@
             checkedListBox1 = new CheckedListBox();
             textBox1 = new TextBox();
             EditPatientPage = new DevExpress.XtraTab.XtraTabPage();
+            EditPagePatientDate = new DevExpress.XtraEditors.DateEdit();
+            EditPatientToMenu = new DevExpress.XtraEditors.SimpleButton();
             PrintPdf = new Button();
             label5 = new Label();
             label4 = new Label();
@@ -47,12 +49,13 @@
             label2 = new Label();
             SaveEditedPatient = new Button();
             EditPagePatientTests = new DevExpress.XtraEditors.XtraScrollableControl();
-            EditPagePatientDate = new TextBox();
             EditPagePatientName = new TextBox();
             ((System.ComponentModel.ISupportInitialize)ViewPatientPage).BeginInit();
             ViewPatientPage.SuspendLayout();
             SearchPatientPage.SuspendLayout();
             EditPatientPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)EditPagePatientDate.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EditPagePatientDate.Properties.CalendarTimeProperties).BeginInit();
             SuspendLayout();
             // 
             // ViewPatientPage
@@ -141,6 +144,8 @@
             // 
             // EditPatientPage
             // 
+            EditPatientPage.Controls.Add(EditPagePatientDate);
+            EditPatientPage.Controls.Add(EditPatientToMenu);
             EditPatientPage.Controls.Add(PrintPdf);
             EditPatientPage.Controls.Add(label5);
             EditPatientPage.Controls.Add(label4);
@@ -150,16 +155,37 @@
             EditPatientPage.Controls.Add(label2);
             EditPatientPage.Controls.Add(SaveEditedPatient);
             EditPatientPage.Controls.Add(EditPagePatientTests);
-            EditPatientPage.Controls.Add(EditPagePatientDate);
             EditPatientPage.Controls.Add(EditPagePatientName);
             EditPatientPage.Name = "EditPatientPage";
             EditPatientPage.Size = new Size(976, 709);
             EditPatientPage.Text = "Edit Patient";
             // 
+            // EditPagePatientDate
+            // 
+            EditPagePatientDate.EditValue = null;
+            EditPagePatientDate.Location = new Point(310, 160);
+            EditPagePatientDate.Name = "EditPagePatientDate";
+            EditPagePatientDate.Properties.Appearance.Font = new Font("Tahoma", 11F);
+            EditPagePatientDate.Properties.Appearance.Options.UseFont = true;
+            EditPagePatientDate.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            EditPagePatientDate.Properties.CalendarTimeProperties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            EditPagePatientDate.Size = new Size(234, 34);
+            EditPagePatientDate.TabIndex = 1;
+            // 
+            // EditPatientToMenu
+            // 
+            EditPatientToMenu.Appearance.Font = new Font("Tahoma", 11F);
+            EditPatientToMenu.Appearance.Options.UseFont = true;
+            EditPatientToMenu.Location = new Point(203, 601);
+            EditPatientToMenu.Name = "EditPatientToMenu";
+            EditPatientToMenu.Size = new Size(128, 43);
+            EditPatientToMenu.TabIndex = 1;
+            EditPatientToMenu.Text = "Back";
+            // 
             // PrintPdf
             // 
             PrintPdf.Font = new Font("Tahoma", 11F);
-            PrintPdf.Location = new Point(512, 601);
+            PrintPdf.Location = new Point(644, 599);
             PrintPdf.Name = "PrintPdf";
             PrintPdf.Size = new Size(128, 43);
             PrintPdf.TabIndex = 1;
@@ -227,7 +253,7 @@
             // SaveEditedPatient
             // 
             SaveEditedPatient.Font = new Font("Tahoma", 11F);
-            SaveEditedPatient.Location = new Point(347, 601);
+            SaveEditedPatient.Location = new Point(416, 599);
             SaveEditedPatient.Name = "SaveEditedPatient";
             SaveEditedPatient.Size = new Size(128, 43);
             SaveEditedPatient.TabIndex = 1;
@@ -242,20 +268,12 @@
             EditPagePatientTests.Size = new Size(954, 327);
             EditPagePatientTests.TabIndex = 1;
             // 
-            // EditPagePatientDate
-            // 
-            EditPagePatientDate.Font = new Font("Tahoma", 11F);
-            EditPagePatientDate.Location = new Point(310, 160);
-            EditPagePatientDate.Name = "EditPagePatientDate";
-            EditPagePatientDate.Size = new Size(150, 34);
-            EditPagePatientDate.TabIndex = 1;
-            // 
             // EditPagePatientName
             // 
             EditPagePatientName.Font = new Font("Tahoma", 11F);
             EditPagePatientName.Location = new Point(310, 81);
             EditPagePatientName.Name = "EditPagePatientName";
-            EditPagePatientName.Size = new Size(150, 34);
+            EditPagePatientName.Size = new Size(234, 34);
             EditPagePatientName.TabIndex = 1;
             // 
             // ViewPatient
@@ -273,6 +291,8 @@
             SearchPatientPage.PerformLayout();
             EditPatientPage.ResumeLayout(false);
             EditPatientPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)EditPagePatientDate.Properties.CalendarTimeProperties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EditPagePatientDate.Properties).EndInit();
             ResumeLayout(false);
         }
 
@@ -284,7 +304,6 @@
         private TextBox textBox1;
         private CheckedListBox checkedListBox1;
         private Button NextToPreview;
-        private TextBox EditPagePatientDate;
         private TextBox EditPagePatientName;
         private Button SaveEditedPatient;
         private DevExpress.XtraEditors.XtraScrollableControl EditPagePatientTests;
@@ -298,5 +317,7 @@
         private Button PrintPdf;
         private DevExpress.XtraEditors.SimpleButton SreachPatientToMenu;
         private DevExpress.XtraEditors.SimpleButton DeleteSelectedPatient;
+        private DevExpress.XtraEditors.SimpleButton EditPatientToMenu;
+        private DevExpress.XtraEditors.DateEdit EditPagePatientDate;
     }
 }

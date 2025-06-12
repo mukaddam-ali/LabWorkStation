@@ -39,6 +39,14 @@ namespace Lab
             LoadAllTests();
             DeleteSelectedPatient.Click += DeleteSelectedPatient_Click;
             SreachPatientToMenu.Click += SreachPatientToMenu_Click;
+            EditPatientToMenu.Click += EditPatientToMenu_Click;
+
+            // Configure date editor
+            EditPagePatientDate.Properties.DisplayFormat.FormatString = "dd/MM/yyyy";
+            EditPagePatientDate.Properties.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            EditPagePatientDate.Properties.EditFormat.FormatString = "dd/MM/yyyy";
+            EditPagePatientDate.Properties.EditFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            EditPagePatientDate.Properties.Mask.EditMask = "dd/MM/yyyy";
 
             // Disable preview button initially
             NextToPreview.Enabled = false;
@@ -280,40 +288,69 @@ namespace Lab
                 // Update patient information
                 DatabaseHelper.UpdatePatient(currentPatientId, fullName, visitDate);
 
-                        // Update test values
-                        for (int i = 0; i < nameFields.Count; i++)
-                        {
-                    var testName = nameFields[i].Text;
-                            var value = valueFields[i].Text.Trim();
-                            var unit = unitFields[i].Text.Trim();
-                            var referenceRange = referenceFields[i].Text.Trim();
+                // Get all currently selected tests from ModifySelectedTests
+                var selectedTestNames = new HashSet<string>();
+                for (int i = 0; i < ModifySelectedTests.Items.Count; i++)
+                {
+                    if (ModifySelectedTests.GetItemChecked(i))
+                    {
+                        selectedTestNames.Add(ModifySelectedTests.Items[i].ToString());
+                    }
+                }
 
+                // First, get existing patient tests to determine which ones to add/update/remove
+                var existingTests = DatabaseHelper.GetPatientTests(currentPatientId);
+                var existingTestNames = existingTests.Select(t => t.TestName).ToHashSet();
+
+                // Tests to remove (tests that exist but are no longer selected)
+                var testsToRemove = existingTestNames.Except(selectedTestNames);
+                foreach (var testName in testsToRemove)
+                {
                     var test = allTests.FirstOrDefault(t => t.Name == testName);
                     if (test != null)
                     {
-                        DatabaseHelper.UpdatePatientTest(currentPatientId, test.Id, value, unit, referenceRange);
+                        DatabaseHelper.DeletePatientTest(currentPatientId, test.Id);
+                    }
+                }
+
+                // Update or add tests
+                foreach (var testName in selectedTestNames)
+                {
+                    var test = allTests.FirstOrDefault(t => t.Name == testName);
+                    if (test != null)
+                    {
+                        // Find the test's values in the UI
+                        int fieldIndex = -1;
+                        for (int i = 0; i < nameFields.Count; i++)
+                        {
+                            if (nameFields[i].Text == testName)
+                            {
+                                fieldIndex = i;
+                                break;
+                            }
+                        }
+
+                        string value = fieldIndex >= 0 ? valueFields[fieldIndex].Text.Trim() : "";
+                        string unit = fieldIndex >= 0 ? unitFields[fieldIndex].Text.Trim() : test.Unit;
+                        string referenceRange = fieldIndex >= 0 ? referenceFields[fieldIndex].Text.Trim() : test.ReferenceRange;
+
+                        // If the test exists, update it; otherwise, insert it
+                        if (existingTestNames.Contains(testName))
+                        {
+                            DatabaseHelper.UpdatePatientTest(currentPatientId, test.Id, value, unit, referenceRange);
+                        }
+                        else
+                        {
+                            DatabaseHelper.InsertPatientTest(currentPatientId, test.Id, value, unit, referenceRange);
+                        }
                     }
                 }
 
                 MessageBox.Show("Patient data saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Ask if they want to print
-                var printResult = MessageBox.Show("Would you like to print this patient's report?", 
-                    "Print Report", 
-                    MessageBoxButtons.YesNo, 
-                    MessageBoxIcon.Question);
-
-                if (printResult == DialogResult.Yes)
-                {
-                    PrintPdf_Click(sender, e);
-                }
-
-                // Refresh the patient list
-                LoadAllPatients();
-                
-                // Return to search page
-                ViewPatientPage.SelectedTabPage = SearchPatientPage;
-                isEditingAllowed = false;
+                // Return to menu
+                this.DialogResult = DialogResult.Cancel;
+                this.Close();
             }
             catch (Exception ex)
             {
@@ -621,50 +658,50 @@ namespace Lab
         }
         private void RepositionRemainingFields(int startIndex)
         {
-            const int VERTICAL_SPACING = 15;
-            const int TEXTBOX_HEIGHT = 30;
-
-            // Create a list to store all controls that need updating
-            var controlUpdates = new List<(Control Control, Point NewLocation)>();
-
-            for (int i = startIndex; i < nameFields.Count; i++)
+            EditPagePatientTests.SuspendLayout();
+            try
             {
-                int newY = i == 0 ? 30 : nameFields[i - 1].Location.Y + VERTICAL_SPACING + TEXTBOX_HEIGHT;
-                var newLocation = new Point(nameFields[i].Location.X, newY);
+                const int VERTICAL_SPACING = 15;
+                const int TEXTBOX_HEIGHT = 30;
+                int currentY = startIndex == 0 ? 30 : 30 + (startIndex * (TEXTBOX_HEIGHT + VERTICAL_SPACING));
 
-                controlUpdates.Add((nameFields[i], newLocation));
-                controlUpdates.Add((valueFields[i], new Point(valueFields[i].Location.X, newY)));
-                controlUpdates.Add((referenceFields[i], new Point(referenceFields[i].Location.X, newY)));
-                controlUpdates.Add((unitFields[i], new Point(unitFields[i].Location.X, newY)));
-
-                // Find and update the delete button position
-                foreach (Control control in EditPagePatientTests.Controls)
+                for (int i = startIndex; i < nameFields.Count; i++)
                 {
-                    if (control is Button deleteButton)
-                    {
-                        bool matchFound = false;
-                        if (deleteButton.Tag is Test test)
-                        {
-                            matchFound = test.Name == nameFields[i].Text;
-                        }
-                        else if (deleteButton.Tag is PatientTest patientTest)
-                        {
-                            matchFound = patientTest.TestName == nameFields[i].Text;
-                        }
+                    // Update positions for all controls in this row
+                    nameFields[i].Top = currentY;
+                    valueFields[i].Top = currentY;
+                    referenceFields[i].Top = currentY;
+                    unitFields[i].Top = currentY;
 
-                        if (matchFound)
+                    // Find and update the delete button position
+                    foreach (Control control in EditPagePatientTests.Controls)
+                    {
+                        if (control is Button deleteButton)
                         {
-                            controlUpdates.Add((deleteButton, new Point(deleteButton.Location.X, newY)));
-                            break;
+                            bool matchFound = false;
+                            if (deleteButton.Tag is Test test)
+                            {
+                                matchFound = test.Name == nameFields[i].Text;
+                            }
+                            else if (deleteButton.Tag is PatientTest patientTest)
+                            {
+                                matchFound = patientTest.TestName == nameFields[i].Text;
+                            }
+
+                            if (matchFound)
+                            {
+                                deleteButton.Top = currentY;
+                                break;
+                            }
                         }
                     }
+
+                    currentY += TEXTBOX_HEIGHT + VERTICAL_SPACING;
                 }
             }
-
-            // Apply all updates at once
-            foreach (var update in controlUpdates)
+            finally
             {
-                update.Control.Location = update.NewLocation;
+                EditPagePatientTests.ResumeLayout(true);
             }
         }
         private static void HandleEnterKey(object sender, KeyEventArgs e, List<TextEdit> fieldsGroup)
@@ -707,68 +744,87 @@ namespace Lab
         {
             try
             {
-                long patientId;
-                string patientName;
-                string visitDate;
-                List<PatientTest> patientTests;
+                // First, save all changes
+                var fullName = EditPagePatientName.Text.Trim();
+                var visitDate = EditPagePatientDate.Text.Trim();
 
-                // If we're on the edit page, save changes first
-                if (ViewPatientPage.SelectedTabPage == EditPatientPage)
+                if (string.IsNullOrWhiteSpace(fullName))
                 {
-                    // Save changes before printing
-                    patientName = EditPagePatientName.Text.Trim();
-                    visitDate = EditPagePatientDate.Text.Trim();
+                    MessageBox.Show("Please enter full name.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                    if (string.IsNullOrWhiteSpace(patientName))
+                // Update patient information
+                DatabaseHelper.UpdatePatient(currentPatientId, fullName, visitDate);
+
+                // Get all currently selected tests from ModifySelectedTests
+                var selectedTestNames = new HashSet<string>();
+                for (int i = 0; i < ModifySelectedTests.Items.Count; i++)
+                {
+                    if (ModifySelectedTests.GetItemChecked(i))
                     {
-                        MessageBox.Show("Please enter full name.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        selectedTestNames.Add(ModifySelectedTests.Items[i].ToString());
                     }
+                }
 
-                    // Update patient information
-                    DatabaseHelper.UpdatePatient(currentPatientId, patientName, visitDate);
+                // First, get existing patient tests to determine which ones to add/update/remove
+                var existingTests = DatabaseHelper.GetPatientTests(currentPatientId);
+                var existingTestNames = existingTests.Select(t => t.TestName).ToHashSet();
 
-                    // Update test values
-                    for (int i = 0; i < nameFields.Count; i++)
+                // Tests to remove (tests that exist but are no longer selected)
+                var testsToRemove = existingTestNames.Except(selectedTestNames);
+                foreach (var testName in testsToRemove)
+                {
+                    var test = allTests.FirstOrDefault(t => t.Name == testName);
+                    if (test != null)
                     {
-                        var testName = nameFields[i].Text;
-                        var value = valueFields[i].Text.Trim();
-                        var unit = unitFields[i].Text.Trim();
-                        var referenceRange = referenceFields[i].Text.Trim();
+                        DatabaseHelper.DeletePatientTest(currentPatientId, test.Id);
+                    }
+                }
 
-                        var test = allTests.FirstOrDefault(t => t.Name == testName);
-                        if (test != null)
+                // Update or add tests
+                foreach (var testName in selectedTestNames)
+                {
+                    var test = allTests.FirstOrDefault(t => t.Name == testName);
+                    if (test != null)
+                    {
+                        // Find the test's values in the UI
+                        int fieldIndex = -1;
+                        for (int i = 0; i < nameFields.Count; i++)
+                        {
+                            if (nameFields[i].Text == testName)
+                            {
+                                fieldIndex = i;
+                                break;
+                            }
+                        }
+
+                        string value = fieldIndex >= 0 ? valueFields[fieldIndex].Text.Trim() : "";
+                        string unit = fieldIndex >= 0 ? unitFields[fieldIndex].Text.Trim() : test.Unit;
+                        string referenceRange = fieldIndex >= 0 ? referenceFields[fieldIndex].Text.Trim() : test.ReferenceRange;
+
+                        // If the test exists, update it; otherwise, insert it
+                        if (existingTestNames.Contains(testName))
                         {
                             DatabaseHelper.UpdatePatientTest(currentPatientId, test.Id, value, unit, referenceRange);
                         }
+                        else
+                        {
+                            DatabaseHelper.InsertPatientTest(currentPatientId, test.Id, value, unit, referenceRange);
+                        }
                     }
-
-                    patientId = currentPatientId;
-                    // Get fresh data from database after saving
-                    patientTests = DatabaseHelper.GetPatientTests(patientId);
-
-                    MessageBox.Show("Changes saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else // We're on the search page
-                {
-                    if (checkedListBox1.SelectedIndex == -1)
-                    {
-                        MessageBox.Show("Please select a patient first.", "No Patient Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                    var selectedPatient = currentPatients[checkedListBox1.SelectedIndex];
-                    patientId = selectedPatient.Id;
-                    patientName = selectedPatient.FullName;
-                    visitDate = selectedPatient.VisitDate;
-                    patientTests = DatabaseHelper.GetPatientTests(patientId);
                 }
 
+                // Get fresh data from database after saving
+                var patientTests = DatabaseHelper.GetPatientTests(currentPatientId);
+
+                // Now proceed with PDF generation
                 SaveFileDialog saveFileDialog = new SaveFileDialog
                 {
                     Filter = "PDF files (*.pdf)|*.pdf",
                     FilterIndex = 1,
                     RestoreDirectory = true,
-                    FileName = $"{patientName}_{visitDate.Replace('/', '-')}.pdf"
+                    FileName = $"{fullName}_{visitDate.Replace('/', '-')}.pdf"
                 };
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -780,9 +836,9 @@ namespace Lab
                         document.Open();
 
                         // Add title
-                        ITextFont titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18);
-                        ITextFont headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12);
-                        ITextFont normalFont = FontFactory.GetFont(FontFactory.HELVETICA, 12);
+                        var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18);
+                        var headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12);
+                        var normalFont = FontFactory.GetFont(FontFactory.HELVETICA, 12);
 
                         // Add laboratory name at the top
                         Paragraph labName = new Paragraph("Laboratory Report", titleFont);
@@ -793,7 +849,7 @@ namespace Lab
                         // Add patient information
                         Paragraph patientInfo = new Paragraph();
                         patientInfo.Add(new Chunk("Patient Name: ", headerFont));
-                        patientInfo.Add(new Chunk(patientName + "\n", normalFont));
+                        patientInfo.Add(new Chunk(fullName + "\n", normalFont));
                         patientInfo.Add(new Chunk("Visit Date: ", headerFont));
                         patientInfo.Add(new Chunk(visitDate + "\n\n", normalFont));
                         document.Add(patientInfo);
@@ -801,7 +857,8 @@ namespace Lab
                         // Create table for test results
                         PdfPTable table = new PdfPTable(4);
                         table.WidthPercentage = 100;
-                        table.SetWidths(new[] { 3f, 2f, 2f, 2f });
+                        float[] columnWidths = { 3f, 2f, 2f, 2f };
+                        table.SetWidths(columnWidths);
 
                         // Add table headers
                         string[] headers = { "Test Name", "Value", "Reference Range", "Unit" };
@@ -849,21 +906,17 @@ namespace Lab
 
                         document.Add(table);
                         document.Close();
-                        MessageBox.Show("PDF file has been created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Changes saved and PDF file has been created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                        // After successful printing, refresh the patient list and return to search page if we were in edit mode
-                        if (ViewPatientPage.SelectedTabPage == EditPatientPage)
-                        {
-                            LoadAllPatients();
-                            ViewPatientPage.SelectedTabPage = SearchPatientPage;
-                            isEditingAllowed = false;
-                        }
+                        // Return to menu
+                        this.DialogResult = DialogResult.Cancel;
+                        this.Close();
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while creating the PDF: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"An error occurred while saving changes and creating the PDF: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -892,6 +945,27 @@ namespace Lab
             // Close the form
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void EditPatientToMenu_Click(object sender, EventArgs e)
+        {
+            // Clear all fields and selections
+            EditPagePatientName.Text = "";
+            EditPagePatientDate.EditValue = null;
+            EditPagePatientTests.Controls.Clear();
+            ModifySelectedTests.Items.Clear();
+
+            // Clear all collections
+            testInputs.Clear();
+            nameFields.Clear();
+            valueFields.Clear();
+            referenceFields.Clear();
+            unitFields.Clear();
+
+            // Reset tab to search page and reload patients
+            ViewPatientPage.SelectedTabPage = SearchPatientPage;
+            isEditingAllowed = false;
+            LoadAllPatients(); // Refresh the patient list
         }
     }
 }

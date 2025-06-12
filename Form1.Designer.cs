@@ -172,11 +172,6 @@
         }
 
         #endregion
-        private DevExpress.XtraEditors.SimpleButton ViewTest1;
-        private DevExpress.XtraEditors.SimpleButton simpleButton2;
-        private DevExpress.XtraEditors.SimpleButton simpleButton3;
-        private DevExpress.XtraEditors.HyperlinkLabelControl hyperlinkLabelControl1;
-        private DevExpress.XtraEditors.PanelControl panelControl2;
         private DevExpress.XtraEditors.SimpleButton AddTest;
         private DevExpress.XtraEditors.SimpleButton ViewPatient;
         private DevExpress.XtraEditors.SimpleButton ViewTest;

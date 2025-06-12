@@ -7,6 +7,10 @@ using DevExpress.XtraEditors;
 using System.Linq;
 using System.IO;
 using System.Drawing;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using Font = System.Drawing.Font;
+using ITextFont = iTextSharp.text.Font;
 
 namespace Lab
 {
@@ -23,6 +27,7 @@ namespace Lab
         private string storedPatientName = "";
         private string storedVisitDate = "";
         private HashSet<string> selectedTestNames = new HashSet<string>();
+        private bool isButtonNavigation = false;
 
         public AddPatientForm()
         {
@@ -30,6 +35,19 @@ namespace Lab
             LoadTestsFromDatabase();
             xtraTabControl.SelectedPageChanging += XtraTabControl_SelectedPageChanging;
             xtraTabControl.SelectedPageChanged += XtraTabControl_SelectedPageChanged;
+            xtraTabControl.MouseDown += XtraTabControl_MouseDown;
+
+            // Configure tab control behavior
+            xtraTabControl.ShowTabHeader = DevExpress.Utils.DefaultBoolean.True;
+            xtraTabControl.HeaderOrientation = DevExpress.XtraTab.TabOrientation.Horizontal;
+            xtraTabControl.HeaderLocation = DevExpress.XtraTab.TabHeaderLocation.Top;
+
+            // Configure date editors
+            dateEditVisitDate.Properties.DisplayFormat.FormatString = "dd/MM/yyyy";
+            dateEditVisitDate.Properties.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            dateEditVisitDate.Properties.EditFormat.FormatString = "dd/MM/yyyy";
+            dateEditVisitDate.Properties.EditFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            dateEditVisitDate.Properties.Mask.EditMask = "dd/MM/yyyy";
 
             // Configure TestCheckBox
             TestCheckBox.CheckOnClick = true;
@@ -37,6 +55,13 @@ namespace Lab
             TestCheckBox.ItemCheck += TestCheckBox_ItemCheck;
             TestCheckBox.ItemHeight = 25; // Increased height for better spacing
             TestCheckBox.Font = new Font(TestCheckBox.Font.FontFamily, 10); // Slightly larger font
+
+            // Initially disable the Save button
+            btnSavePatient.Enabled = false;
+
+            // Add text changed handler for name fields
+            textEditFullName.TextChanged += ValidateInputs;
+            PatientName3.TextChanged += ValidateInputs;
         }
 
         private void LoadTestsFromDatabase()
@@ -117,6 +142,10 @@ namespace Lab
             storedPatientName = textEditFullName.Text;
             storedVisitDate = dateEditVisitDate.Text;
 
+            // Set the flag before changing tabs
+            isButtonNavigation = true;
+            xtraTabControl.SelectedTabPage = tabEnterValues;
+
             int currentY = 60;
             const int VERTICAL_SPACING = 15;
             const int COLUMN_WIDTH = 150;
@@ -191,8 +220,6 @@ namespace Lab
                     currentY += TEXTBOX_HEIGHT + VERTICAL_SPACING;
                 }
             }
-
-            xtraTabControl.SelectedTabPage = tabEnterValues;
         }
 
         private void DeleteSelectedTest_Click(object sender, EventArgs e)
@@ -207,61 +234,72 @@ namespace Lab
             int index = selectedTests.IndexOf(test);
             if (index >= 0)
             {
-                // Remove the controls for this test
-                var controlsToRemove = new Control[]
+                EditPagePatientTests.SuspendLayout();
+                try
                 {
-                    nameFields[index],
-                    valueFields[index],
-                    referenceFields[index],
-                    unitFields[index],
-                    button
-                };
-
-                foreach (var control in controlsToRemove)
-                {
-                    EditPagePatientTests.Controls.Remove(control);
-                    control.Dispose();
-                }
-
-                // Remove from our tracking collections
-                nameFields.RemoveAt(index);
-                valueFields.RemoveAt(index);
-                referenceFields.RemoveAt(index);
-                unitFields.RemoveAt(index);
-                testInputs.Remove(test.Id);
-                selectedTests.RemoveAt(index);
-
-                // Uncheck the test in the TestCheckBox if it's visible
-                for (int i = 0; i < TestCheckBox.Items.Count; i++)
-                {
-                    if (TestCheckBox.Items[i].ToString() == test.Name)
+                    // Remove the controls for this test
+                    var controlsToRemove = new Control[]
                     {
-                        TestCheckBox.SetItemChecked(i, false);
-                        break;
-                    }
-                }
+                        nameFields[index],
+                        valueFields[index],
+                        referenceFields[index],
+                        unitFields[index],
+                        button
+                    };
 
-                // Reposition remaining controls
-                const int VERTICAL_SPACING = 15;
-                const int TEXTBOX_HEIGHT = 30;
-                int currentY = 60;
-
-                for (int i = 0; i < nameFields.Count; i++)
-                {
-                    nameFields[i].Top = currentY;
-                    valueFields[i].Top = currentY;
-                    referenceFields[i].Top = currentY;
-                    unitFields[i].Top = currentY;
-
-                    // Find and update the delete button position
-                    var deleteBtn = EditPagePatientTests.Controls.OfType<Button>()
-                        .FirstOrDefault(b => b.Top == nameFields[i].Top);
-                    if (deleteBtn != null)
+                    foreach (var control in controlsToRemove)
                     {
-                        deleteBtn.Top = currentY;
+                        EditPagePatientTests.Controls.Remove(control);
+                        control.Dispose();
                     }
 
-                    currentY += TEXTBOX_HEIGHT + VERTICAL_SPACING;
+                    // Remove from our tracking collections
+                    nameFields.RemoveAt(index);
+                    valueFields.RemoveAt(index);
+                    referenceFields.RemoveAt(index);
+                    unitFields.RemoveAt(index);
+                    testInputs.Remove(test.Id);
+                    selectedTests.RemoveAt(index);
+
+                    // Uncheck the test in the TestCheckBox if it's visible
+                    for (int i = 0; i < TestCheckBox.Items.Count; i++)
+                    {
+                        if (TestCheckBox.Items[i].ToString() == test.Name)
+                        {
+                            TestCheckBox.SetItemChecked(i, false);
+                            break;
+                        }
+                    }
+
+                    // Reposition remaining controls
+                    const int VERTICAL_SPACING = 15;
+                    const int TEXTBOX_HEIGHT = 30;
+                    int currentY = 60; // Starting Y position for the first test
+
+                    for (int i = 0; i < nameFields.Count; i++)
+                    {
+                        // Update positions for all controls in this row
+                        nameFields[i].Top = currentY;
+                        valueFields[i].Top = currentY;
+                        referenceFields[i].Top = currentY;
+                        unitFields[i].Top = currentY;
+
+                        // Find and update the delete button position
+                        foreach (Control control in EditPagePatientTests.Controls)
+                        {
+                            if (control is Button deleteButton && deleteButton.Tag is Test buttonTest && buttonTest.Name == nameFields[i].Text)
+                            {
+                                deleteButton.Top = currentY;
+                                break;
+                            }
+                        }
+
+                        currentY += TEXTBOX_HEIGHT + VERTICAL_SPACING;
+                    }
+                }
+                finally
+                {
+                    EditPagePatientTests.ResumeLayout(true);
                 }
             }
         }
@@ -293,6 +331,9 @@ namespace Lab
 
                 var patientId = DatabaseHelper.InsertPatient(fullName, visitDate);
 
+                // List to store patient tests for PDF generation
+                List<PatientTest> patientTests = new List<PatientTest>();
+
                 for (int i = 0; i < selectedTests.Count; i++)
                 {
                     var test = selectedTests[i];
@@ -314,10 +355,120 @@ namespace Lab
                             unit,
                             referenceRange
                         );
+
+                        // Add to list for PDF generation
+                        patientTests.Add(new PatientTest
+                        {
+                            TestName = test.Name,
+                            Value = value,
+                            Unit = unit,
+                            ReferenceRange = referenceRange
+                        });
                     }
                 }
 
                 MessageBox.Show("Patient data saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Ask if they want to print
+                var printResult = MessageBox.Show("Would you like to print this patient's report?", 
+                    "Print Report", 
+                    MessageBoxButtons.YesNo, 
+                    MessageBoxIcon.Question);
+
+                if (printResult == DialogResult.Yes)
+                {
+                    SaveFileDialog saveFileDialog = new SaveFileDialog
+                    {
+                        Filter = "PDF files (*.pdf)|*.pdf",
+                        FilterIndex = 1,
+                        RestoreDirectory = true,
+                        FileName = $"{fullName}_{visitDate.ToString("yyyy-MM-dd")}.pdf"
+                    };
+
+                    if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        using (FileStream fs = new FileStream(saveFileDialog.FileName, FileMode.Create))
+                        {
+                            Document document = new Document(PageSize.A4, 50, 50, 50, 50);
+                            PdfWriter writer = PdfWriter.GetInstance(document, fs);
+                            document.Open();
+
+                            // Add title
+                            var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18);
+                            var headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12);
+                            var normalFont = FontFactory.GetFont(FontFactory.HELVETICA, 12);
+
+                            // Add laboratory name at the top
+                            Paragraph labName = new Paragraph("Laboratory Report", titleFont);
+                            labName.Alignment = Element.ALIGN_CENTER;
+                            labName.SpacingAfter = 20f;
+                            document.Add(labName);
+
+                            // Add patient information
+                            Paragraph patientInfo = new Paragraph();
+                            patientInfo.Add(new Chunk("Patient Name: ", headerFont));
+                            patientInfo.Add(new Chunk(fullName + "\n", normalFont));
+                            patientInfo.Add(new Chunk("Visit Date: ", headerFont));
+                            patientInfo.Add(new Chunk(visitDate.ToString("yyyy-MM-dd") + "\n\n", normalFont));
+                            document.Add(patientInfo);
+
+                            // Create table for test results
+                            PdfPTable table = new PdfPTable(4);
+                            table.WidthPercentage = 100;
+                            float[] columnWidths = { 3f, 2f, 2f, 2f };
+                            table.SetWidths(columnWidths);
+
+                            // Add table headers
+                            string[] headers = { "Test Name", "Value", "Reference Range", "Unit" };
+                            foreach (string header in headers)
+                            {
+                                PdfPCell cell = new PdfPCell(new Phrase(header, headerFont));
+                                cell.BackgroundColor = BaseColor.LIGHT_GRAY;
+                                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                                cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                                cell.Padding = 5;
+                                table.AddCell(cell);
+                            }
+
+                            // Add test results
+                            foreach (var test in patientTests)
+                            {
+                                // Test name
+                                PdfPCell nameCell = new PdfPCell(new Phrase(test.TestName, normalFont));
+                                nameCell.HorizontalAlignment = Element.ALIGN_LEFT;
+                                nameCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                                nameCell.Padding = 5;
+                                table.AddCell(nameCell);
+
+                                // Value
+                                PdfPCell valueCell = new PdfPCell(new Phrase(test.Value, normalFont));
+                                valueCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                                valueCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                                valueCell.Padding = 5;
+                                table.AddCell(valueCell);
+
+                                // Reference Range
+                                PdfPCell refCell = new PdfPCell(new Phrase(test.ReferenceRange, normalFont));
+                                refCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                                refCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                                refCell.Padding = 5;
+                                table.AddCell(refCell);
+
+                                // Unit
+                                PdfPCell unitCell = new PdfPCell(new Phrase(test.Unit, normalFont));
+                                unitCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                                unitCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                                unitCell.Padding = 5;
+                                table.AddCell(unitCell);
+                            }
+
+                            document.Add(table);
+                            document.Close();
+                            MessageBox.Show("PDF file has been created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
@@ -340,6 +491,9 @@ namespace Lab
                 // Store the values when moving to test selection
                 storedPatientName = textEditFullName.Text;
                 storedVisitDate = dateEditVisitDate.Text;
+                
+                // Set the flag before changing tabs
+                isButtonNavigation = true;
                 xtraTabControl.SelectedTabPage = tabSelectTests;
             }
             else
@@ -391,76 +545,50 @@ namespace Lab
 
         private void XtraTabControl_SelectedPageChanging(object sender, DevExpress.XtraTab.TabPageChangingEventArgs e)
         {
-            // Always store current values when leaving patient info tab
-            if (xtraTabControl.SelectedTabPage == tabPatientInfo)
+            if (!isButtonNavigation)
             {
-                storedPatientName = textEditFullName.Text;
-                storedVisitDate = dateEditVisitDate.Text;
-            }
-
-            // Always restore values when going back to patient info tab
-            if (e.Page == tabPatientInfo)
-            {
-                textEditFullName.Text = storedPatientName;
-                dateEditVisitDate.Text = storedVisitDate;
-            }
-
-            if (e.Page == tabSelectTests)
-            {
-                if (string.IsNullOrWhiteSpace(textEditFullName.Text) ||
-                    string.IsNullOrWhiteSpace(dateEditVisitDate.Text))
+                e.Cancel = true;
+                if (e.Page == tabEnterValues)
                 {
-                    e.Cancel = true;
-                    MessageBox.Show("Please complete patient information first.",
-                                  "Incomplete Information",
-                                  MessageBoxButtons.OK,
-                                  MessageBoxIcon.Warning);
-                    return;
+                    if (TestCheckBox.CheckedItems.Count == 0)
+                    {
+                        MessageBox.Show("Please select at least one test and use the Next button to continue.",
+                            "No Tests Selected",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please use the Next button to continue.",
+                            "Use Next Button",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
                 }
-                // Store values when moving to test selection
-                storedPatientName = textEditFullName.Text;
-                storedVisitDate = dateEditVisitDate.Text;
-            }
-            else if (e.Page == tabEnterValues)
-            {
-                if (TestCheckBox.CheckedItems.Count == 0)
+                else if (e.Page == tabSelectTests)
                 {
-                    e.Cancel = true;
-                    MessageBox.Show("Please select at least one test.",
-                                  "No Tests Selected",
-                                  MessageBoxButtons.OK,
-                                  MessageBoxIcon.Warning);
-                    return;
+                    if (string.IsNullOrWhiteSpace(textEditFullName.Text) || dateEditVisitDate.EditValue == null)
+                    {
+                        MessageBox.Show("Please complete patient information and use the Next button to continue.",
+                            "Incomplete Patient Information",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please use the Next button to continue.",
+                            "Use Next Button",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
                 }
             }
+            isButtonNavigation = false;
         }
 
-        private void BtnBackToPatientInfo_Click(object sender, EventArgs e)
+        private void XtraTabControl_MouseDown(object sender, MouseEventArgs e)
         {
-            // Restore the stored values when going back
-            textEditFullName.Text = storedPatientName;
-            dateEditVisitDate.Text = storedVisitDate;
-            xtraTabControl.SelectedTabPage = tabPatientInfo;
-        }
-
-        private void BtnBackToSelectTest_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < selectedTests.Count; i++)
-            {
-                var test = selectedTests[i];
-                if (testInputs.ContainsKey(test.Id))
-                {
-                    testInputs[test.Id].Text = valueFields[i].Text;
-                }
-            }
-
-            storedPatientName = PatientName3.Text;
-            storedVisitDate = Date3.Text;
-
-            textEditFullName.Text = storedPatientName;
-            dateEditVisitDate.Text = storedVisitDate;
-
-            xtraTabControl.SelectedTabPage = tabSelectTests;
+            // Empty handler - all navigation and messages are handled in SelectedPageChanging
         }
 
         private void TestCheckBox_MouseClick(object sender, MouseEventArgs e)
@@ -522,6 +650,38 @@ namespace Lab
             // Close this form
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void BtnBackToPatientInfo_Click(object sender, EventArgs e)
+        {
+            // Restore the stored values when going back
+            textEditFullName.Text = storedPatientName;
+            dateEditVisitDate.Text = storedVisitDate;
+            isButtonNavigation = true;
+            xtraTabControl.SelectedTabPage = tabPatientInfo;
+        }
+
+        private void BtnBackToSelectTest_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < selectedTests.Count; i++)
+            {
+                var test = selectedTests[i];
+                if (testInputs.ContainsKey(test.Id))
+                {
+                    testInputs[test.Id].Text = valueFields[i].Text;
+                }
+            }
+
+            storedPatientName = textEditFullName.Text;
+            storedVisitDate = dateEditVisitDate.Text;
+            isButtonNavigation = true;
+            xtraTabControl.SelectedTabPage = tabSelectTests;
+        }
+
+        private void ValidateInputs(object sender, EventArgs e)
+        {
+            // Enable save button only if the name is not empty
+            btnSavePatient.Enabled = !string.IsNullOrWhiteSpace(PatientName3.Text);
         }
     }
 }

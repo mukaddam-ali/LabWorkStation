@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using DevExpress.CodeParser;
+using Lab.Models;
 
 namespace Lab
 {
@@ -17,7 +19,7 @@ namespace Lab
         public AddTest()
         {
             InitializeComponent();
-            
+            AddTestToMenu.Click += AddTestToMenu_Click;
             // Set up Enter key handling for each field
             TestName.KeyDown += (s, e) => HandleEnterKey(s, e, TestUnit);
             TestUnit.KeyDown += (s, e) => HandleEnterKey(s, e, TestRef);
@@ -132,6 +134,18 @@ namespace Lab
             {
                 MessageBox.Show($"Error saving test: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void AddTestToMenu_Click(object sender, EventArgs e)
+        {
+            // Clear all fields
+            TestName.Text = "";
+            TestUnit.Text = "";
+            TestRef.Text = "";
+
+            // Return to menu
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
         }
     }
 }

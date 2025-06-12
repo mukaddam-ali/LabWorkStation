@@ -270,8 +270,8 @@
             // 
             // EditPagePatientTests
             // 
-            EditPagePatientTests.Font = new Font("Tahoma", 11F);
-            EditPagePatientTests.Location = new Point(20, 105);
+            EditPagePatientTests.Font = new Font("Tahoma", 9F);
+            EditPagePatientTests.Location = new Point(19, 105);
             EditPagePatientTests.Name = "EditPagePatientTests";
             EditPagePatientTests.Size = new Size(1035, 457);
             EditPagePatientTests.TabIndex = 0;

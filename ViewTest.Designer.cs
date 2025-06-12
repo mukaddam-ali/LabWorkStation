@@ -31,11 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewTest));
             xtraTabControl1 = new DevExpress.XtraTab.XtraTabControl();
             SelectTest = new DevExpress.XtraTab.XtraTabPage();
+            ViewTestToMenu = new DevExpress.XtraEditors.SimpleButton();
             label4 = new Label();
             BtnPreviewTest = new Button();
             TestsList = new CheckedListBox();
             SearchTest = new TextBox();
             PreviewTest = new DevExpress.XtraTab.XtraTabPage();
+            BackToSelectTest = new DevExpress.XtraEditors.SimpleButton();
             label3 = new Label();
             label2 = new Label();
             label1 = new Label();
@@ -62,6 +64,7 @@
             // 
             // SelectTest
             // 
+            SelectTest.Controls.Add(ViewTestToMenu);
             SelectTest.Controls.Add(label4);
             SelectTest.Controls.Add(BtnPreviewTest);
             SelectTest.Controls.Add(TestsList);
@@ -69,6 +72,16 @@
             SelectTest.Name = "SelectTest";
             SelectTest.Size = new Size(798, 415);
             SelectTest.Text = "Select Test";
+            // 
+            // ViewTestToMenu
+            // 
+            ViewTestToMenu.Appearance.Font = new Font("Tahoma", 11F);
+            ViewTestToMenu.Appearance.Options.UseFont = true;
+            ViewTestToMenu.Location = new Point(275, 346);
+            ViewTestToMenu.Name = "ViewTestToMenu";
+            ViewTestToMenu.Size = new Size(128, 43);
+            ViewTestToMenu.TabIndex = 4;
+            ViewTestToMenu.Text = "Menu";
             // 
             // label4
             // 
@@ -83,7 +96,7 @@
             // BtnPreviewTest
             // 
             BtnPreviewTest.Font = new Font("Tahoma", 11F);
-            BtnPreviewTest.Location = new Point(359, 344);
+            BtnPreviewTest.Location = new Point(417, 346);
             BtnPreviewTest.Name = "BtnPreviewTest";
             BtnPreviewTest.Size = new Size(128, 43);
             BtnPreviewTest.TabIndex = 4;
@@ -112,6 +125,7 @@
             // 
             // PreviewTest
             // 
+            PreviewTest.Controls.Add(BackToSelectTest);
             PreviewTest.Controls.Add(label3);
             PreviewTest.Controls.Add(label2);
             PreviewTest.Controls.Add(label1);
@@ -123,6 +137,16 @@
             PreviewTest.Name = "PreviewTest";
             PreviewTest.Size = new Size(798, 415);
             PreviewTest.Text = "Preview Test";
+            // 
+            // BackToSelectTest
+            // 
+            BackToSelectTest.Appearance.Font = new Font("Tahoma", 11F);
+            BackToSelectTest.Appearance.Options.UseFont = true;
+            BackToSelectTest.Location = new Point(185, 336);
+            BackToSelectTest.Name = "BackToSelectTest";
+            BackToSelectTest.Size = new Size(128, 43);
+            BackToSelectTest.TabIndex = 4;
+            BackToSelectTest.Text = "Back";
             // 
             // label3
             // 
@@ -157,7 +181,7 @@
             // BtnSaveTest
             // 
             BtnSaveTest.Font = new Font("Tahoma", 11F);
-            BtnSaveTest.Location = new Point(419, 291);
+            BtnSaveTest.Location = new Point(506, 336);
             BtnSaveTest.Name = "BtnSaveTest";
             BtnSaveTest.Size = new Size(128, 43);
             BtnSaveTest.TabIndex = 4;
@@ -168,7 +192,7 @@
             // BtnDeleteTest
             // 
             BtnDeleteTest.Font = new Font("Tahoma", 11F);
-            BtnDeleteTest.Location = new Point(265, 291);
+            BtnDeleteTest.Location = new Point(346, 336);
             BtnDeleteTest.Name = "BtnDeleteTest";
             BtnDeleteTest.Size = new Size(128, 43);
             BtnDeleteTest.TabIndex = 4;
@@ -238,5 +262,7 @@
         private TextBox EditTestRef;
         private TextBox EditTestName;
         private Label label4;
+        private DevExpress.XtraEditors.SimpleButton ViewTestToMenu;
+        private DevExpress.XtraEditors.SimpleButton BackToSelectTest;
     }
 }

@@ -19,17 +19,17 @@ namespace Lab
     public class Patient
     {
         public long Id { get; set; }
-        public string FullName { get; set; }
-        public string VisitDate { get; set; }
+        public required string FullName { get; set; }
+        public required string VisitDate { get; set; }
     }
 
     public class PatientTest
     {
         public int TestId { get; set; }
-        public string TestName { get; set; }
-        public string Value { get; set; }
-        public string Unit { get; set; }
-        public string ReferenceRange { get; set; }
+        public required string TestName { get; set; }
+        public required string Value { get; set; }
+        public required string Unit { get; set; }
+        public required string ReferenceRange { get; set; }
     }
 
     public static class DatabaseHelper
@@ -415,6 +415,7 @@ namespace Lab
                         var test = new PatientTest
                         {
                             TestId = Convert.ToInt32(reader["TestId"]),
+                            TestName = string.Empty, // Will be set later when we query the TestList database
                             Value = reader["Value"]?.ToString() ?? string.Empty,
                             Unit = reader["Unit"]?.ToString() ?? string.Empty,
                             ReferenceRange = reader["ReferenceRange"]?.ToString() ?? string.Empty

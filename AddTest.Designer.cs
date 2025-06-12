@@ -36,12 +36,13 @@
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
+            AddTestToMenu = new DevExpress.XtraEditors.SimpleButton();
             SuspendLayout();
             // 
             // BtnSaveTest
             // 
             BtnSaveTest.Font = new Font("Tahoma", 11F);
-            BtnSaveTest.Location = new Point(339, 301);
+            BtnSaveTest.Location = new Point(451, 300);
             BtnSaveTest.Name = "BtnSaveTest";
             BtnSaveTest.Size = new Size(128, 43);
             BtnSaveTest.TabIndex = 0;
@@ -106,11 +107,22 @@
             label3.TabIndex = 6;
             label3.Text = "Test Unit : ";
             // 
+            // AddTestToMenu
+            // 
+            AddTestToMenu.Appearance.Font = new Font("Tahoma", 11F);
+            AddTestToMenu.Appearance.Options.UseFont = true;
+            AddTestToMenu.Location = new Point(259, 300);
+            AddTestToMenu.Name = "AddTestToMenu";
+            AddTestToMenu.Size = new Size(128, 43);
+            AddTestToMenu.TabIndex = 7;
+            AddTestToMenu.Text = "Menu";
+            // 
             // AddTest
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(AddTestToMenu);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -134,5 +146,6 @@
         private Label label1;
         private Label label2;
         private Label label3;
+        private DevExpress.XtraEditors.SimpleButton AddTestToMenu;
     }
 }
